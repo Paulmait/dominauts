@@ -1,0 +1,147 @@
+{
+  "allfives": {
+    "name": "All Fives (Muggins)",
+    "icon": "🇺🇸",
+    "shortDescription": "Score points when the sum of open ends equals a multiple of 5",
+    "rules": {
+      "overview": "All Fives is a popular American domino game where players score points during play by making the ends of the domino layout add up to multiples of 5.",
+      "setup": {
+        "players": "2-4 players",
+        "tiles": "Double-six set (28 tiles)",
+        "deal": "7 tiles per player (2 players), 5 tiles (3-4 players)",
+        "starter": "Player with highest double or highest tile"
+      },
+      "gameplay": [
+        "Players take turns placing tiles that match the open ends",
+        "Score points immediately when the sum of all open ends equals 5, 10, 15, 20, etc.",
+        "Doubles are placed perpendicular and count both ends",
+        "Draw from boneyard if unable to play",
+        "Pass if boneyard is empty and cannot play"
+      ],
+      "scoring": {
+        "during": "Points equal the sum when it's a multiple of 5",
+        "end": "Winner gets points for all pips remaining in opponents' hands",
+        "winning": "First to reach 150 points wins"
+      },
+      "special": [
+        "Muggins Rule: If a player misses points, opponent can call 'Muggins!' and claim them",
+        "All doubles are spinners after first double is played"
+      ]
+    },
+    "tips": [
+      "Keep track of the board count at all times",
+      "Save tiles that can make multiples of 5",
+      "Block opponents from scoring opportunities"
+    ],
+    "sampleImage": "assets/usa.png"
+  },
+  "block": {
+    "name": "Block Dominoes",
+    "icon": "🟦",
+    "shortDescription": "Classic dominoes - no drawing, pass if you cannot play",
+    "rules": {
+      "overview": "Block Dominoes is the simplest and most traditional domino game. Players cannot draw tiles and must pass if they cannot play.",
+      "setup": {
+        "players": "2-4 players",
+        "tiles": "Double-six set (28 tiles)",
+        "deal": "7 tiles per player",
+        "starter": "Player with double-six or highest double"
+      },
+      "gameplay": [
+        "Players match tiles to open ends of the layout",
+        "No drawing from boneyard - pass if unable to play",
+        "Game is blocked when no one can play",
+        "First player to empty hand wins the round"
+      ],
+      "scoring": {
+        "during": "No points during play",
+        "end": "Winner scores sum of all opponents' remaining pips",
+        "winning": "First to reach 100 points wins"
+      },
+      "special": [
+        "Strategic blocking is key to winning",
+        "Remember what tiles have been played"
+      ]
+    },
+    "tips": [
+      "Play doubles early to avoid getting stuck",
+      "Track which tiles are still unplayed",
+      "Block opponents by limiting their options"
+    ],
+    "sampleImage": "assets/default.png"
+  },
+  "cuban": {
+    "name": "Cuban Block Dominoes",
+    "icon": "🇨🇺",
+    "shortDescription": "Team-based block dominoes with double-nine set",
+    "rules": {
+      "overview": "Cuban Dominoes is played in partnerships with a double-nine set. Communication through play is crucial for team success.",
+      "setup": {
+        "players": "4 players in partnerships (1&3 vs 2&4)",
+        "tiles": "Double-nine set (55 tiles)",
+        "deal": "10 tiles per player",
+        "starter": "Player with double-nine"
+      },
+      "gameplay": [
+        "Partners sit opposite each other",
+        "Play proceeds counterclockwise",
+        "No drawing - must pass if unable to play",
+        "Partners work together to empty hands first",
+        "Communication through tile play is essential"
+      ],
+      "scoring": {
+        "during": "No points during play",
+        "end": "Winning team scores sum of losing team's pips",
+        "winning": "First team to reach 200 points wins"
+      },
+      "special": [
+        "Capicúa: Bonus points for winning with a tile playable on both ends",
+        "Partners cannot directly communicate about tiles"
+      ]
+    },
+    "tips": [
+      "Signal partner through strategic plays",
+      "Block opponents while helping partner",
+      "Save versatile tiles for endgame"
+    ],
+    "sampleImage": "assets/cuba.png"
+  },
+  "chicken": {
+    "name": "Chicken Foot",
+    "icon": "🇲🇽",
+    "shortDescription": "Must play three tiles on doubles to form a 'chicken foot'",
+    "rules": {
+      "overview": "Mexican Train's cousin, Chicken Foot requires players to satisfy doubles by playing three tiles on them before continuing regular play.",
+      "setup": {
+        "players": "2-8 players",
+        "tiles": "Double-nine or double-twelve set",
+        "deal": "Varies by player count",
+        "starter": "Highest double starts first round"
+      },
+      "gameplay": [
+        "Start each round with specific double (9-9, then 8-8, etc.)",
+        "When double is played, it must be 'satisfied' with 3 tiles",
+        "These 3 tiles form the 'chicken foot' pattern",
+        "No other plays allowed until chicken foot is complete",
+        "Draw if unable to satisfy the double"
+      ],
+      "scoring": {
+        "during": "No points during play",
+        "end": "Points equal remaining pips in hand",
+        "winning": "Lowest total after all rounds wins",
+        "penalty": "50 points for holding 0-0 at round end"
+      },
+      "special": [
+        "Each round starts with next lower double",
+        "Game has 10 rounds with double-nine set",
+        "Chicken foot creates strategic bottlenecks"
+      ]
+    },
+    "tips": [
+      "Get rid of high value tiles early",
+      "Save tiles matching current round's double",
+      "Use doubles strategically to block opponents"
+    ],
+    "sampleImage": "assets/mexico.png"
+  }
+}

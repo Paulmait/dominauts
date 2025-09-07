@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Domino Game</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <h1>Domino Game</h1>
+
+  <div class="controls">
+    <label for="game-mode">Select Game Mode:</label>
+    <select id="game-mode">
+      <option value="auto">Auto-Detect</option>
+      <option value="cuba">Cuba - Block Dominoes</option>
+      <option value="usa">USA - All Fives</option>
+      <option value="mexico">Mexico - Chicken Foot</option>
+      <option value="default">Classic Block Dominoes</option>
+    </select>
+
+    <button id="start-button">▶️ Start Game</button>
+    <button id="view-rules-button">📖 View Rules</button>
+  </div>
+
+  <div id="how-to-play" class="hidden">
+    <h3>How to Play</h3>
+    <p id="instructions">Select a game mode to view instructions.</p>
+  </div>
+
+  <div id="turn-info"></div>
+  <div id="scoreboard"></div>
+  <div id="game-board"></div>
+  <div id="player-hand"></div>
+
+  <div id="example-layout" class="example-layout">
+    <h3>Sample Board Layout</h3>
+    <img id="example-image" src="images/default.png" alt="Example board layout" />
+  </div>
+
+  <div id="modal" class="modal hidden">
+    <div class="modal-content">
+      <h2>Round Over</h2>
+      <div id="winner-message"></div>
+      <button onclick="restartGame()">Play Again</button>
+    </div>
+  </div>
+
+  <button id="restart-button" onclick="restartGame()">🔁 Restart Game</button>
+
+  <script src="./dist/main.js" defer></script>
+</body>
+</html>

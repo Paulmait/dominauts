@@ -1,0 +1,88 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+    
+    function isValidImageFile() {
+      return request.resource.contentType.matches('image/.*') &&
+             request.resource.size < 5 * 1024 * 1024; // 5MB max
+    }
+    
+    function isValidAudioFile() {
+      return request.resource.contentType.matches('audio/.*') &&
+             request.resource.size < 10 * 1024 * 1024; // 10MB max
+    }
+    
+    // User avatars
+    match /avatars/{userId}/{fileName} {
+      allow read: if true; // Public avatars
+      allow write: if isOwner(userId) && isValidImageFile();
+      allow delete: if isOwner(userId);
+    }
+    
+    // Game assets (tiles, boards, skins)
+    match /assets/{assetType}/{assetId}/{fileName} {
+      allow read: if true; // Public game assets
+      allow write: if request.auth.token.admin == true && isValidImageFile();
+      allow delete: if request.auth.token.admin == true;
+    }
+    
+    // User-generated content (custom skins)
+    match /ugc/{userId}/{contentId}/{fileName} {
+      allow read: if true; // Public UGC
+      allow write: if isOwner(userId) && isValidImageFile();
+      allow delete: if isOwner(userId) || request.auth.token.admin == true;
+    }
+    
+    // Tournament banners and assets
+    match /tournaments/{tournamentId}/{fileName} {
+      allow read: if true;
+      allow write: if request.auth.token.admin == true && isValidImageFile();
+      allow delete: if request.auth.token.admin == true;
+    }
+    
+    // Sound effects and music
+    match /sounds/{soundType}/{fileName} {
+      allow read: if true;
+      allow write: if request.auth.token.admin == true && isValidAudioFile();
+      allow delete: if request.auth.token.admin == true;
+    }
+    
+    // Replay files
+    match /replays/{gameId}/{fileName} {
+      allow read: if isAuthenticated();
+      allow write: if false; // Server-managed only
+      allow delete: if request.auth.token.admin == true;
+    }
+    
+    // Chat attachments (stickers, emojis)
+    match /chat/{chatType}/{fileName} {
+      allow read: if true;
+      allow write: if request.auth.token.admin == true && 
+                     request.resource.size < 500 * 1024; // 500KB max for stickers
+      allow delete: if request.auth.token.admin == true;
+    }
+    
+    // Temporary uploads (for processing)
+    match /temp/{userId}/{fileName} {
+      allow read: if isOwner(userId);
+      allow write: if isOwner(userId) && 
+                     request.resource.size < 20 * 1024 * 1024; // 20MB max
+      allow delete: if isOwner(userId);
+    }
+    
+    // Default deny all
+    match /{document=**} {
+      allow read: if false;
+      allow write: if false;
+    }
+  }
+}

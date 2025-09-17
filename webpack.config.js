@@ -2,15 +2,38 @@ const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 
-module.exports = {
-  mode: 'development',
+module.exports = (env, argv) => {
+  const isProduction = argv.mode === 'production';
+
+  return {
+  mode: isProduction ? 'production' : 'development',
   entry: './src/index.ts',
   output: {
-    filename: 'bundle.[contenthash].js',
+    filename: isProduction ? 'bundle.[contenthash].js' : 'bundle.js',
     path: path.resolve(__dirname, 'dist'),
     clean: true,
+    publicPath: '/',
   },
-  devtool: 'inline-source-map',
+  devtool: isProduction ? 'source-map' : 'inline-source-map',
+  optimization: isProduction ? {
+    minimize: true,
+    splitChunks: {
+      chunks: 'all',
+      cacheGroups: {
+        vendor: {
+          test: /[\\/]node_modules[\\/]/,
+          name: 'vendors',
+          priority: 10
+        },
+        common: {
+          minChunks: 2,
+          priority: 5,
+          reuseExistingChunk: true
+        }
+      }
+    },
+    runtimeChunk: 'single'
+  } : {},
   devServer: {
     static: './dist',
     hot: true,
@@ -34,7 +57,7 @@ module.exports = {
     ],
   },
   resolve: {
-    extensions: ['.ts', '.js'],
+    extensions: ['.ts', '.tsx', '.js', '.jsx'],
     alias: {
       '@': path.resolve(__dirname, 'src'),
       '@core': path.resolve(__dirname, 'src/core'),
@@ -47,11 +70,28 @@ module.exports = {
   plugins: [
     new HtmlWebpackPlugin({
       template: './src/index.html',
+      minify: isProduction ? {
+        removeComments: true,
+        collapseWhitespace: true,
+        removeAttributeQuotes: true
+      } : false,
+      meta: {
+        'viewport': 'width=device-width, initial-scale=1.0, maximum-scale=5.0',
+        'theme-color': '#00d4ff'
+      }
     }),
     new CopyWebpackPlugin({
       patterns: [
-        { from: 'src/assets', to: 'assets' },
+        { from: 'src/assets', to: 'assets', noErrorOnMissing: true },
+        { from: 'manifest.json', to: 'manifest.json' },
+        { from: 'sw.js', to: 'sw.js' },
+        { from: 'styles.css', to: 'styles.css' }
       ],
     }),
   ],
+  performance: isProduction ? {
+    maxEntrypointSize: 512000,
+    maxAssetSize: 512000
+  } : false,
+};
 };

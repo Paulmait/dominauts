@@ -1,0 +1,75 @@
+{
+  "name": "Dominauts™",
+  "short_name": "Dominauts",
+  "description": "Strategic domino game with multiplayer, AI opponents, and multiple game modes",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#1a1a2e",
+  "theme_color": "#00d4ff",
+  "orientation": "any",
+  "categories": ["games", "strategy", "board"],
+  "icons": [
+    {
+      "src": "/assets/icons/icon-72x72.png",
+      "sizes": "72x72",
+      "type": "image/png"
+    },
+    {
+      "src": "/assets/icons/icon-96x96.png",
+      "sizes": "96x96",
+      "type": "image/png"
+    },
+    {
+      "src": "/assets/icons/icon-128x128.png",
+      "sizes": "128x128",
+      "type": "image/png"
+    },
+    {
+      "src": "/assets/icons/icon-144x144.png",
+      "sizes": "144x144",
+      "type": "image/png"
+    },
+    {
+      "src": "/assets/icons/icon-152x152.png",
+      "sizes": "152x152",
+      "type": "image/png"
+    },
+    {
+      "src": "/assets/icons/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/assets/icons/icon-384x384.png",
+      "sizes": "384x384",
+      "type": "image/png"
+    },
+    {
+      "src": "/assets/icons/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/assets/screenshots/game-mobile.png",
+      "sizes": "375x812",
+      "type": "image/png",
+      "platform": "narrow",
+      "label": "Dominauts game on mobile"
+    },
+    {
+      "src": "/assets/screenshots/game-desktop.png",
+      "sizes": "1920x1080",
+      "type": "image/png",
+      "platform": "wide",
+      "label": "Dominauts game on desktop"
+    }
+  ],
+  "prefer_related_applications": false,
+  "scope": "/",
+  "dir": "ltr",
+  "lang": "en-US"
+}

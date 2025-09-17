@@ -11,12 +11,16 @@ export enum GameMode {
   MEXICAN_TRAIN = 'mexican'
 }
 
-export enum GameState {
+export enum GameStatus {
   MENU = 'menu',
   PLAYING = 'playing',
   PAUSED = 'paused',
   ROUND_END = 'round_end',
   GAME_OVER = 'game_over'
+}
+
+export interface GameState extends GameSession {
+  status: GameStatus;
 }
 
 export enum PlayerType {
@@ -38,7 +42,12 @@ export interface Position {
   y: number;
 }
 
-export interface PlacedTile extends DominoTile {
+export interface PlacedTile {
+  tile: DominoTile;
+id: string;
+  left: number;
+  right: number;
+  isDouble: boolean;
   position: Position;
   rotation: number;
   playerId: string;
@@ -47,10 +56,12 @@ export interface PlacedTile extends DominoTile {
 
 export interface Player {
   id: string;
+  uid?: string;
   name: string;
   type: PlayerType;
   avatar?: string;
   hand: DominoTile[];
+  handCount?: number;
   score: number;
   isActive: boolean;
   coins?: number;
@@ -74,19 +85,37 @@ export interface GameSession {
   board: PlacedTile[];
   deck: DominoTile[];
   currentPlayerIndex: number;
-  state: GameState;
+  currentTurn?: number;
+  state: GameStatus;
+  mode?: GameMode;
+  winner?: string;
   round: number;
   moveHistory: Move[];
   createdAt: number;
   updatedAt: number;
 }
 
+export enum MoveType {
+  PLACE_TILE = 'place_tile',
+  DRAW_TILE = 'draw_tile',
+  PASS = 'pass'
+}
+
 export interface Move {
   playerId: string;
   tile: DominoTile;
   position: Position;
+  type?: MoveType;
   score?: number;
   timestamp: number;
+}
+
+export interface ValidMove {
+  tile: DominoTile;
+  position: Position;
+  score: number;
+  side: 'left' | 'right' | 'both';
+  endPlayed?: 'left' | 'right';
 }
 
 export interface MultiplayerRoom {

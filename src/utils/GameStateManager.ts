@@ -3,7 +3,7 @@
  * Manages game state, persistence, and transitions
  */
 
-import { GameSession, GameState, GameConfig, Player, Move, PlacedTile, DominoTile } from '../types';
+import { GameSession, GameStatus, GameConfig, Player, Move, PlacedTile, DominoTile } from '../types';
 import { EventEmitter } from '../core/utils/EventEmitter';
 
 export class GameStateManager extends EventEmitter {
@@ -28,7 +28,7 @@ export class GameStateManager extends EventEmitter {
       board: [],
       deck: this.generateDeck(config.maxPips),
       currentPlayerIndex: 0,
-      state: GameState.PLAYING,
+      state: GameStatus.PLAYING,
       round: 1,
       moveHistory: [],
       createdAt: Date.now(),
@@ -52,7 +52,7 @@ export class GameStateManager extends EventEmitter {
   /**
    * Update game state
    */
-  updateState(state: GameState): void {
+  updateState(state: GameStatus): void {
     if (!this.session) return;
     
     const previousState = this.session.state;
@@ -130,7 +130,7 @@ export class GameStateManager extends EventEmitter {
     this.session.round++;
     this.session.board = [];
     this.session.deck = this.generateDeck(this.session.config.maxPips);
-    this.session.state = GameState.PLAYING;
+    this.session.state = GameStatus.PLAYING;
     this.session.updatedAt = Date.now();
     
     // Reset player hands
@@ -148,7 +148,7 @@ export class GameStateManager extends EventEmitter {
   endGame(winnerId?: string): void {
     if (!this.session) return;
     
-    this.session.state = GameState.GAME_OVER;
+    this.session.state = GameStatus.GAME_OVER;
     this.session.updatedAt = Date.now();
     
     const winner = winnerId 
@@ -181,7 +181,7 @@ export class GameStateManager extends EventEmitter {
    */
   exitToMenu(): void {
     this.session = null;
-    this.updateState(GameState.MENU);
+    this.updateState(GameStatus.MENU);
     this.clearStorage();
     this.emit('exitedToMenu');
   }
@@ -228,7 +228,7 @@ export class GameStateManager extends EventEmitter {
    */
   private startAutoSave(): void {
     this.autoSaveInterval = setInterval(() => {
-      if (this.session && this.session.state === GameState.PLAYING) {
+      if (this.session && this.session.state === GameStatus.PLAYING) {
         this.saveSession();
       }
     }, 5000); // Save every 5 seconds

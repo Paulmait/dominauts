@@ -2,8 +2,18 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Domino Game</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes" />
+  <meta name="description" content="Dominauts™ - Strategic domino game with multiplayer, AI opponents, and multiple game modes" />
+  <meta name="theme-color" content="#00d4ff" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Dominauts" />
+  <title>Dominauts™ - Strategic Domino Game</title>
+  <link rel="manifest" href="/manifest.json" />
   <link rel="stylesheet" href="styles.css" />
+  <link rel="apple-touch-icon" href="/assets/icons/icon-192x192.png" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/icons/icon-32x32.png" />
+  <link rel="icon" type="image/png" sizes="16x16" href="/assets/icons/icon-16x16.png" />
 </head>
 <body>
   <h1>Domino Game</h1>
@@ -48,5 +58,15 @@
   <button id="restart-button" onclick="restartGame()">🔁 Restart Game</button>
 
   <script src="./dist/main.js" defer></script>
+  <script>
+    // Register service worker for PWA support
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js')
+          .then(registration => console.log('SW registered:', registration))
+          .catch(error => console.log('SW registration failed:', error));
+      });
+    }
+  </script>
 </body>
 </html>

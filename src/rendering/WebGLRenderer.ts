@@ -9,19 +9,19 @@ import { DominoTile, PlacedTile, GameState, Position } from '../types';
 export class WebGLRenderer extends EventEmitter {
   private canvas: HTMLCanvasElement;
   private gl: WebGLRenderingContext;
-  private program: WebGLProgram;
+  private program!: WebGLProgram;
   private textures: Map<string, WebGLTexture> = new Map();
-  private vertexBuffer: WebGLBuffer;
-  private indexBuffer: WebGLBuffer;
+  private vertexBuffer!: WebGLBuffer;
+  private indexBuffer!: WebGLBuffer;
   private projectionMatrix: Float32Array;
   private viewMatrix: Float32Array;
   
   // Shader attributes and uniforms
-  private positionAttribute: number;
-  private texCoordAttribute: number;
-  private projectionUniform: WebGLUniformLocation | null;
-  private viewUniform: WebGLUniformLocation | null;
-  private textureUniform: WebGLUniformLocation | null;
+  private positionAttribute!: number;
+  private texCoordAttribute!: number;
+  private projectionUniform: WebGLUniformLocation | null = null;
+  private viewUniform: WebGLUniformLocation | null = null;
+  private textureUniform: WebGLUniformLocation | null = null;
   
   // Camera properties
   private cameraX: number = 0;
@@ -431,7 +431,7 @@ export class WebGLRenderer extends EventEmitter {
     this.drawBoard();
     
     // Draw tiles
-    gameState.board.tiles.forEach(tile => {
+    gameState.board.forEach((tile: PlacedTile) => {
       this.drawTile(tile);
     });
     

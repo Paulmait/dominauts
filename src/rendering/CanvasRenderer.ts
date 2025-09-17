@@ -262,7 +262,7 @@ export class CanvasRenderer extends EventEmitter {
     this.drawBoard(gameState);
     
     // Draw placed tiles
-    gameState.board.tiles.forEach(tile => {
+    gameState.board.forEach((tile: PlacedTile) => {
       this.drawPlacedTile(tile);
     });
     

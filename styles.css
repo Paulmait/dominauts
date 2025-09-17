@@ -1,18 +1,64 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+
 body {
-  font-family: Arial, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
   padding: 20px;
   text-align: center;
-  background-color: #fff;
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  color: #ffffff;
+  min-height: 100vh;
+  overflow-x: hidden;
+  touch-action: manipulation;
+}
+
+h1 {
+  font-size: clamp(1.5rem, 5vw, 2.5rem);
+  margin-bottom: 1rem;
+  background: linear-gradient(90deg, #00d4ff, #00a8cc);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0 0 20px rgba(0, 212, 255, 0.3);
 }
 
 .controls {
   margin-bottom: 15px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
 }
 
 select, button {
-  padding: 8px 12px;
+  padding: 12px 20px;
   font-size: 16px;
   margin: 5px;
+  border: none;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+  backdrop-filter: blur(10px);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  touch-action: manipulation;
+}
+
+select {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+button:hover, button:active {
+  background: rgba(0, 212, 255, 0.3);
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(0, 212, 255, 0.3);
+}
+
+button:active {
+  transform: translateY(0);
 }
 
 #game-board, #player-hand {
@@ -21,6 +67,10 @@ select, button {
   justify-content: center;
   margin-top: 20px;
   gap: 10px;
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 15px;
+  backdrop-filter: blur(10px);
 }
 
 .domino-tile {
@@ -29,62 +79,182 @@ select, button {
   justify-content: center;
   width: 60px;
   height: 30px;
-  border: 2px solid black;
+  border: 2px solid #00d4ff;
   border-radius: 6px;
-  background-color: #f4f4f4;
+  background: linear-gradient(135deg, #2a2a3e, #1a1a2e);
+  color: #ffffff;
   font-size: 18px;
   cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+  touch-action: manipulation;
+}
+
+.domino-tile:hover {
+  transform: scale(1.1);
+  box-shadow: 0 5px 20px rgba(0, 212, 255, 0.5);
+}
+
+.domino-tile:active {
+  transform: scale(0.95);
 }
 
 #turn-info {
   margin-top: 15px;
   font-weight: bold;
-  font-size: 18px;
+  font-size: clamp(1rem, 3vw, 1.25rem);
+  color: #00d4ff;
 }
 
 #scoreboard {
   margin-top: 20px;
-  font-size: 16px;
+  font-size: clamp(0.9rem, 2.5vw, 1.1rem);
+  background: rgba(255, 255, 255, 0.05);
+  padding: 15px;
+  border-radius: 10px;
+  backdrop-filter: blur(10px);
 }
 
 #restart-button {
   margin-top: 30px;
-  padding: 10px 20px;
+  padding: 12px 24px;
   font-size: 16px;
-  background-color: #333;
+  background: linear-gradient(135deg, #ff006e, #8338ec);
   color: white;
   border: none;
-  border-radius: 6px;
+  border-radius: 8px;
   cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(255, 0, 110, 0.3);
+}
+
+#restart-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(255, 0, 110, 0.4);
 }
 
 .modal {
   position: fixed;
-  top: 0; left: 0;
+  top: 0;
+  left: 0;
   width: 100vw;
   height: 100vh;
-  background-color: rgba(0,0,0,0.6);
+  background-color: rgba(0, 0, 0, 0.8);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 10;
+  backdrop-filter: blur(5px);
 }
 
 .modal-content {
-  background: white;
+  background: linear-gradient(135deg, #1a1a2e, #16213e);
   padding: 30px;
-  border-radius: 12px;
+  border-radius: 15px;
   text-align: center;
-  width: 300px;
+  width: min(90%, 400px);
+  border: 2px solid #00d4ff;
+  box-shadow: 0 10px 40px rgba(0, 212, 255, 0.3);
+}
+
+.modal-content h2 {
+  color: #00d4ff;
+  margin-bottom: 15px;
 }
 
 .example-layout img {
-  max-width: 600px;
-  width: 95%;
-  border: 1px solid #ccc;
-  border-radius: 8px;
+  max-width: 100%;
+  width: min(95%, 600px);
+  border: 2px solid #00d4ff;
+  border-radius: 10px;
+  box-shadow: 0 5px 20px rgba(0, 212, 255, 0.2);
 }
 
 .hidden {
-  display: none;
+  display: none !important;
+}
+
+/* Mobile Responsive Styles */
+@media (max-width: 768px) {
+  body {
+    padding: 10px;
+  }
+
+  .controls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  select, button {
+    width: 100%;
+    margin: 5px 0;
+    padding: 15px;
+    font-size: 18px;
+  }
+
+  .domino-tile {
+    width: 50px;
+    height: 25px;
+    font-size: 14px;
+  }
+
+  #game-board, #player-hand {
+    padding: 10px;
+    gap: 5px;
+  }
+}
+
+@media (max-width: 480px) {
+  h1 {
+    font-size: 1.5rem;
+  }
+
+  .domino-tile {
+    width: 45px;
+    height: 23px;
+    font-size: 12px;
+  }
+
+  .modal-content {
+    padding: 20px;
+    width: 95%;
+  }
+}
+
+/* Touch Device Optimizations */
+@media (hover: none) and (pointer: coarse) {
+  button, select, .domino-tile {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  .domino-tile:hover {
+    transform: none;
+  }
+
+  button:hover {
+    transform: none;
+    box-shadow: 0 5px 15px rgba(0, 212, 255, 0.3);
+  }
+}
+
+/* Landscape Mobile */
+@media (max-height: 500px) and (orientation: landscape) {
+  body {
+    padding: 5px;
+  }
+
+  h1 {
+    font-size: 1.2rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .controls {
+    margin-bottom: 10px;
+  }
+
+  #game-board, #player-hand {
+    margin-top: 10px;
+    padding: 10px;
+  }
 }

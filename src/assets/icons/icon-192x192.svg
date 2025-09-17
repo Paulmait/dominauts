@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="192" height="192">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1a1a2e;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#16213e;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="tile" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#00d4ff;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#00a8cc;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" fill="url(#bg)" rx="64"/>
+  <g transform="translate(256,256)">
+    <!-- Domino tile -->
+    <rect x="-120" y="-60" width="240" height="120" fill="url(#tile)" rx="12" stroke="#fff" stroke-width="4"/>
+    <line x1="0" y1="-60" x2="0" y2="60" stroke="#fff" stroke-width="3"/>
+    <!-- Left dots -->
+    <circle cx="-60" cy="-20" r="10" fill="#fff"/>
+    <circle cx="-60" cy="20" r="10" fill="#fff"/>
+    <!-- Right dots -->
+    <circle cx="60" cy="-30" r="10" fill="#fff"/>
+    <circle cx="60" cy="0" r="10" fill="#fff"/>
+    <circle cx="60" cy="30" r="10" fill="#fff"/>
+  </g>
+  <!-- Title -->
+  <text x="256" y="420" font-family="Arial, sans-serif" font-size="48" font-weight="bold" text-anchor="middle" fill="#00d4ff">DOMINAUTS</text>
+</svg>

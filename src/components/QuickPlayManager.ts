@@ -223,7 +223,7 @@ export class QuickPlayManager extends EventEmitter {
     this.isGameActive = true;
     
     // Start recording if enabled
-    if (this.currentConfig.autoSave) {
+    if (this.currentConfig.autoSave && this.currentGame) {
       this.replaySystem.startRecording(this.currentGame);
     }
     
@@ -283,12 +283,12 @@ export class QuickPlayManager extends EventEmitter {
     this.currentGame = this.gameEngine.applyMove(move, this.currentGame);
     
     // Record move
-    if (this.replaySystem) {
+    if (this.replaySystem && this.currentGame) {
       this.replaySystem.recordMove(move, this.currentGame);
     }
     
     // Update hint system
-    if (this.hintSystem) {
+    if (this.hintSystem && this.currentGame) {
       this.hintSystem.updateWithMove(move, true);
     }
     
@@ -343,7 +343,7 @@ export class QuickPlayManager extends EventEmitter {
       this.currentGame = this.gameEngine.applyMove(aiMove, this.currentGame);
       
       // Record move
-      if (this.replaySystem) {
+      if (this.replaySystem && this.currentGame) {
         this.replaySystem.recordMove(aiMove, this.currentGame);
       }
     }
@@ -366,7 +366,7 @@ export class QuickPlayManager extends EventEmitter {
     this.emit('gameUpdated', this.currentGame);
     
     // Show hint for player's turn if enabled
-    if (this.currentConfig.enableHints && this.hintSystem) {
+    if (this.currentConfig.enableHints && this.hintSystem && this.currentGame) {
       const humanPlayer = this.currentGame.players[0];
       const hint = this.hintSystem.getHint(this.currentGame, humanPlayer);
       if (hint) {

@@ -133,8 +133,8 @@ export class ReplaySystem extends EventEmitter {
         initialHand: [...p.hand],
         finalScore: 0,
         isWinner: false,
-        isBot: p.isBot,
-        rating: p.rating
+        isBot: (p as any).isBot || false,
+        rating: (p as any).rating || 0
       })),
       moves: [],
       initialState: this.cloneGameState(gameState),
@@ -174,8 +174,8 @@ export class ReplaySystem extends EventEmitter {
       timestamp: Date.now(),
       thinkingTime,
       boardSnapshot: {
-        tiles: [...gameState.board.tiles.map(t => t.tile)],
-        openEnds: [...gameState.board.openEnds],
+        tiles: [...gameState.board.map((t: any) => t.tile || t)],
+        openEnds: [],
         scores: gameState.players.map(p => p.score)
       }
     };
@@ -405,13 +405,17 @@ export class ReplaySystem extends EventEmitter {
   private applyMoveToState(state: GameState, move: Move): void {
     // Simplified - would need full game logic
     if (move.type === 'place_tile' && move.tile) {
-      state.board.tiles.push({
+      state.board.push({
         tile: move.tile,
+        id: move.tile.id,
+        left: move.tile.left,
+        right: move.tile.right,
+        isDouble: move.tile.isDouble,
         playerId: move.playerId,
         position: move.position!,
         rotation: 0,
-        placedAt: new Date()
-      });
+        timestamp: Date.now()
+      } as any);
     }
     
     // Update turn

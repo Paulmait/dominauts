@@ -361,6 +361,74 @@ export class GameEngine extends EventEmitter {
     return { ...this.state };
   }
 
+  // Additional methods for integration
+  validateMove(move: any, gameState?: GameState): boolean {
+    const state = gameState || this.state;
+    const tile = move.tile;
+    const position = move.position || 'right';
+
+    return this.gameMode.validateMove(
+      tile,
+      position,
+      state.board,
+      state
+    );
+  }
+
+  applyMove(move: any, gameState?: GameState): GameState {
+    const state = gameState || this.state;
+
+    if (move.type === 'place_tile' && move.tile) {
+      this.makeMove(move.tile, move.position || 'right');
+    } else if (move.type === 'draw') {
+      this.drawTile();
+    } else if (move.type === 'pass') {
+      this.pass();
+    }
+
+    return this.getState();
+  }
+
+  isGameBlocked(gameState?: GameState): boolean {
+    const state = gameState || this.state;
+    return !this.canAnyPlayerMove();
+  }
+
+  determineBlockedWinner(gameState?: GameState): Player | null {
+    const state = gameState || this.state;
+
+    // Winner is player with lowest pip count
+    let lowestPips = Infinity;
+    let winner: Player | null = null;
+
+    state.players.forEach(player => {
+      const pips = player.getTotalPips();
+      if (pips < lowestPips) {
+        lowestPips = pips;
+        winner = player;
+      }
+    });
+
+    return winner;
+  }
+
+  initializeGame(players: any[]): GameState {
+    // Reset and initialize with provided players
+    this.state = this.initializeGameState(this.state.config);
+
+    // Update players if provided
+    if (players && players.length > 0) {
+      this.state.players = players.map((p, index) => {
+        const player = this.state.players[index] || new Player(p.name, p.type, p.id);
+        if (p.hand) player.hand = p.hand;
+        if (p.score !== undefined) player.score = p.score;
+        return player;
+      });
+    }
+
+    return this.getState();
+  }
+
   saveState(): string {
     return JSON.stringify({
       board: this.state.board.toJSON(),

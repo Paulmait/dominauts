@@ -281,7 +281,7 @@ export class MonetizationSystem extends EventEmitter {
     // Start monetization loops
     this.startDynamicPricing();
     this.startOfferRotation();
-    this.startWhaleDetection();
+    // this.startWhaleDetection(); // TODO: Implement whale detection
   }
 
   /**

@@ -28,7 +28,7 @@ export interface CompleteGameState {
   // Timers and animations
   turnStartTime: number;
   totalGameTime: number;
-  animationsInProgress: string[];
+  animationsInProgress: any[];
   pendingAnimations: any[];
 
   // UI state
@@ -289,7 +289,7 @@ export class GameStateManager {
         animation,
         transform,
         currentTime: (element as any).currentTime || 0
-      });
+      } as any);
 
       // Pause animation
       (element as HTMLElement).style.animationPlayState = 'paused';
@@ -304,7 +304,7 @@ export class GameStateManager {
     if (!this.currentState) return;
 
     // Resume each animation
-    this.currentState.animationsInProgress.forEach(animState => {
+    this.currentState.animationsInProgress.forEach((animState: any) => {
       const element = document.getElementById(animState.elementId);
       if (element) {
         (element as HTMLElement).style.animationPlayState = 'running';

@@ -207,7 +207,7 @@ export class UserTrackingSystem {
     this.sessionId = this.generateSessionId();
 
     // Collect device data
-    this.collectDeviceData();
+    // this.collectDeviceData(); // TODO: Implement device data collection
 
     // Get IP and location
     await this.fetchIPAndLocation();
@@ -635,13 +635,14 @@ export class UserTrackingSystem {
       const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
       if (!gl) return null;
 
-      const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
+      const gl2 = gl as WebGLRenderingContext;
+      const debugInfo = gl2.getExtension('WEBGL_debug_renderer_info');
       return {
-        vendor: gl.getParameter(gl.VENDOR),
+        vendor: gl2.getParameter(gl2.VENDOR),
         renderer: debugInfo ?
-          gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL) :
-          gl.getParameter(gl.RENDERER),
-        version: gl.getParameter(gl.VERSION),
+          gl2.getParameter((debugInfo as any).UNMASKED_RENDERER_WEBGL) :
+          gl2.getParameter(gl2.RENDERER),
+        version: gl2.getParameter(gl2.VERSION),
       };
     } catch {
       return null;

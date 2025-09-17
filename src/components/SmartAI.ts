@@ -419,3 +419,99 @@ class DefaultStrategy implements AIStrategy {
     return validMoves[Math.floor(Math.random() * validMoves.length)];
   }
 }
+
+// Export statement for SmartAI class
+export { SmartAI };
+
+// Additional helper methods for SmartAI
+Object.assign(SmartAI.prototype, {
+  /**
+   * Make a move for the current game state
+   */
+  makeMove(gameState: any): Move | null {
+    // Extract necessary data from game state
+    const currentPlayer = gameState.players?.[gameState.currentPlayerIndex];
+    const hand = currentPlayer?.hand || [];
+    const board = gameState.board || [];
+
+    // Generate valid moves
+    const validMoves = this.generateValidMoves(hand, board);
+
+    if (validMoves.length === 0) {
+      return null;
+    }
+
+    // Get best move based on strategy
+    return this.getBestMove(hand, board, validMoves);
+  },
+
+  /**
+   * Generate all valid moves from current position
+   */
+  generateValidMoves(hand: DominoTile[], board: PlacedTile[]): Move[] {
+    const moves: Move[] = [];
+    const openEnds = this.getOpenEnds(board);
+
+    hand.forEach(tile => {
+      openEnds.forEach(end => {
+        if (this.canPlayTile(tile, end)) {
+          moves.push({
+            playerId: 'ai',
+            tile,
+            position: end.position,
+            type: MoveType.PLACE_TILE,
+            timestamp: Date.now()
+          });
+        }
+      });
+    });
+
+    return moves;
+  },
+
+  /**
+   * Get open ends from the board
+   */
+  getOpenEnds(board: PlacedTile[]): any[] {
+    if (!board || board.length === 0) {
+      return [{ value: -1, position: { x: 0, y: 0 } }];
+    }
+
+    const ends: any[] = [];
+
+    // Find leftmost and rightmost tiles
+    const leftmost = board.reduce((min, tile) =>
+      tile.position.x < min.position.x ? tile : min
+    );
+    const rightmost = board.reduce((max, tile) =>
+      tile.position.x > max.position.x ? tile : max
+    );
+
+    ends.push({
+      value: leftmost.left,
+      position: { x: leftmost.position.x - 1, y: leftmost.position.y }
+    });
+
+    ends.push({
+      value: rightmost.right,
+      position: { x: rightmost.position.x + 1, y: rightmost.position.y }
+    });
+
+    return ends;
+  },
+
+  /**
+   * Check if a tile can be played at an end
+   */
+  canPlayTile(tile: DominoTile, end: any): boolean {
+    if (end.value === -1) return true; // First tile
+    return tile.left === end.value || tile.right === end.value;
+  },
+
+  /**
+   * Get AI move for QuickPlayManager
+   */
+  getMove(gameState: any): Move | null {
+    return this.makeMove(gameState);
+  }
+});

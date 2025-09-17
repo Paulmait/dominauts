@@ -122,10 +122,9 @@ export class HintSystem extends EventEmitter {
           moves.push({
             tile,
             position: end.position,
-            endPlayed: end.side,
-            type: MoveType.PLACE_TILE,
-            isValid: true
-          });
+            score: 0,
+            side: end.side as 'left' | 'right'
+          } as ValidMove);
         }
       });
     });
@@ -272,7 +271,7 @@ export class HintSystem extends EventEmitter {
     
     // Opening spinner in Chicken Foot
     if (gameState.mode === GameMode.CHICKEN_FOOT && move.tile.isDouble) {
-      if (gameState.board.tiles.length < 3) {
+      if (gameState.board.length < 3) {
         score += 30; // Early spinner is valuable
       }
     }
@@ -413,7 +412,7 @@ export class HintSystem extends EventEmitter {
    * Categorize move type
    */
   private categorizeMove(analysis: MoveAnalysis, gameState: GameState): HintCategory {
-    if (gameState.board.tiles.length < 3) {
+    if (gameState.board.length < 3) {
       return HintCategory.OPENING;
     }
     
@@ -473,7 +472,7 @@ export class HintSystem extends EventEmitter {
     // Implementation depends on game mode
     const ends: OpenEnd[] = [];
     
-    if (gameState.board.tiles.length === 0) {
+    if (gameState.board.length === 0) {
       // First play
       ends.push({
         value: -1,
@@ -482,7 +481,7 @@ export class HintSystem extends EventEmitter {
       });
     } else {
       // Get actual open ends from board
-      gameState.board.openEnds.forEach((value, index) => {
+      this.getOpenEnds(gameState).forEach((value: any, index: number) => {
         ends.push({
           value,
           position: this.getEndPosition(gameState, index),
@@ -498,16 +497,16 @@ export class HintSystem extends EventEmitter {
    * Helper: Check if tile can be played
    */
   private canPlayTile(tile: DominoTile, endValue: number, gameState: GameState): boolean {
-    if (gameState.board.tiles.length === 0) return true;
+    if (gameState.board.length === 0) return true;
     return tile.left === endValue || tile.right === endValue;
   }
   
   /**
    * Helper: Get resulting ends after move
    */
-  private getResultingEnds(move: ValidMove, gameState: GameState): number[] {
+  private getResultingEnds(move: ValidMove, gameState: GameState): any[] {
     // Simplified - would need full implementation
-    const ends = [...gameState.board.openEnds];
+    const ends = [...this.getOpenEnds(gameState)] as any[];
     const playedEnd = move.endPlayed === 'left' ? 0 : 1;
     
     if (move.tile.left === ends[playedEnd]) {
@@ -524,7 +523,7 @@ export class HintSystem extends EventEmitter {
    */
   private isEndgame(gameState: GameState): boolean {
     const totalTiles = gameState.players.reduce((sum, p) => sum + p.handCount, 0);
-    return totalTiles < 10 || gameState.board.boneyard.length < 5;
+    return totalTiles < 10 || gameState.deck.length < 5;
   }
   
   /**
@@ -533,7 +532,7 @@ export class HintSystem extends EventEmitter {
   private getRareNumbers(gameState: GameState): number[] {
     const played = new Map<number, number>();
     
-    gameState.board.tiles.forEach(tile => {
+    gameState.board.forEach(tile => {
       [tile.tile.left, tile.tile.right].forEach(n => {
         played.set(n, (played.get(n) || 0) + 1);
       });
@@ -553,11 +552,13 @@ export class HintSystem extends EventEmitter {
    * Get hint for draw or pass
    */
   private getDrawOrPassHint(gameState: GameState, player: Player): Hint | null {
-    if (gameState.board.boneyard.length > 0) {
+    if (gameState.deck.length > 0) {
       return {
         move: {
-          type: MoveType.DRAW_TILE,
-          isValid: true
+          tile: {} as any,
+          position: { x: 0, y: 0 },
+          score: 0,
+          side: 'both' as const
         } as ValidMove,
         score: 0,
         reasoning: ['No playable tiles. Draw from the boneyard.'],
@@ -568,8 +569,10 @@ export class HintSystem extends EventEmitter {
     } else {
       return {
         move: {
-          type: MoveType.PASS,
-          isValid: true
+          tile: {} as any,
+          position: { x: 0, y: 0 },
+          score: 0,
+          side: 'both' as const
         } as ValidMove,
         score: 0,
         reasoning: ['No playable tiles and boneyard is empty. Must pass.'],

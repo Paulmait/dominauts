@@ -28,8 +28,17 @@
   },
   "description": "",
   "dependencies": {
+    "@dicebear/avataaars": "^9.2.4",
+    "@dicebear/collection": "^9.2.4",
+    "@dicebear/core": "^9.2.4",
+    "@fingerprintjs/fingerprintjs": "^4.6.2",
+    "@tsparticles/react": "^3.0.0",
     "firebase": "^12.2.1",
+    "framer-motion": "^12.23.13",
+    "lottie-web": "^5.13.0",
+    "react-hot-toast": "^2.6.0",
     "socket.io-client": "^4.8.1",
+    "tsparticles": "^3.9.1",
     "uuid": "^12.0.0"
   }
 }

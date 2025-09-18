@@ -1,6 +1,6 @@
 import { Player } from './Player';
 import { Tile } from './Tile';
-import { Board } from './Board';
+import { Board, BoardEnd } from './Board';
 
 export type DifficultyLevel = 'easy' | 'medium' | 'hard' | 'expert';
 
@@ -65,15 +65,19 @@ export class AIPlayer extends Player {
     const boardEnds = board.getEnds();
 
     for (const tile of this.hand) {
-      if (!boardEnds) {
+      if (!boardEnds || boardEnds.length === 0) {
         // First move - any tile can be played
         moves.push({ tile, side: 'head' });
       } else {
-        if (tile.canConnect(boardEnds.head)) {
-          moves.push({ tile, side: 'head' });
-        }
-        if (tile.canConnect(boardEnds.tail)) {
-          moves.push({ tile, side: 'tail' });
+        // Check each board end
+        for (const end of boardEnds) {
+          if (tile.hasValue(end.value)) {
+            if (end.position === 'left') {
+              moves.push({ tile, side: 'head' });
+            } else if (end.position === 'right') {
+              moves.push({ tile, side: 'tail' });
+            }
+          }
         }
       }
     }
@@ -172,17 +176,26 @@ export class AIPlayer extends Player {
    */
   private getResultingBoardEnds(move: { tile: Tile; side: 'head' | 'tail' }, board: Board): { head: number; tail: number } {
     const currentEnds = board.getEnds();
-    if (!currentEnds) {
+    if (!currentEnds || currentEnds.length === 0) {
       return { head: move.tile.left, tail: move.tile.right };
     }
 
-    if (move.side === 'head') {
-      const newHead = move.tile.left === currentEnds.head ? move.tile.right : move.tile.left;
-      return { head: newHead, tail: currentEnds.tail };
-    } else {
-      const newTail = move.tile.right === currentEnds.tail ? move.tile.left : move.tile.right;
-      return { head: currentEnds.head, tail: newTail };
+    // Find left and right end values
+    const leftEnd = currentEnds.find(e => e.position === 'left');
+    const rightEnd = currentEnds.find(e => e.position === 'right');
+
+    let headValue = leftEnd ? leftEnd.value : move.tile.left;
+    let tailValue = rightEnd ? rightEnd.value : move.tile.right;
+
+    if (move.side === 'head' && leftEnd) {
+      const newHead = move.tile.left === leftEnd.value ? move.tile.right : move.tile.left;
+      return { head: newHead, tail: tailValue };
+    } else if (move.side === 'tail' && rightEnd) {
+      const newTail = move.tile.right === rightEnd.value ? move.tile.left : move.tile.right;
+      return { head: headValue, tail: newTail };
     }
+
+    return { head: headValue, tail: tailValue };
   }
 
   /**

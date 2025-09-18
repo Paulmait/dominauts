@@ -2,8 +2,8 @@ import { AllFives } from './modes/AllFives';
 import { BlockDominoes } from './modes/BlockDominoes';
 import { ChickenFoot } from './modes/ChickenFoot';
 import { GameEngine } from './core/GameEngine';
-import { Player } from './core/Player';
-import { AIPlayer } from './core/AIPlayer';
+import { Player } from './core/models/Player';
+import { AIPlayer } from './core/models/AIPlayer';
 import { GameModeSelector } from './components/GameModeSelector';
 
 export class QuickGame {
@@ -229,15 +229,16 @@ export class QuickGame {
           if (tileIndex >= 0 && tileIndex < hand.length) {
             // Try to play the selected tile
             const tile = hand[tileIndex];
-            const played = this.gameEngine!.playTile(currentPlayer, tile, 'head');
+            const played = this.gameEngine!.makeMove(tile, 'left');
 
             if (played) {
               this.updateDisplay();
 
               // Let AI play after a delay
               setTimeout(() => {
-                if (this.gameEngine && !this.gameEngine.isGameOver()) {
-                  this.gameEngine.playAITurn();
+                if (this.gameEngine && !this.gameEngine.state.isGameOver) {
+                  // Simple AI move - just play first valid tile
+                  this.gameEngine.nextTurn();
                   this.updateDisplay();
                 }
               }, 1000);

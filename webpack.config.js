@@ -7,7 +7,7 @@ module.exports = (env, argv) => {
 
   return {
   mode: isProduction ? 'production' : 'development',
-  entry: './src/playable-game.ts',
+  entry: './src/awesome-domino-game.ts',
   output: {
     filename: isProduction ? 'bundle.[contenthash].js' : 'bundle.js',
     path: path.resolve(__dirname, 'dist'),

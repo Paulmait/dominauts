@@ -1,4 +1,5 @@
 const path = require('path');
+const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
@@ -175,6 +176,32 @@ module.exports = {
   },
 
   plugins: [
+    // Define environment variables for the build
+    new webpack.DefinePlugin({
+      'process.env': {
+        NODE_ENV: JSON.stringify('production'),
+        VITE_SUPABASE_URL: JSON.stringify(process.env.VITE_SUPABASE_URL || ''),
+        VITE_SUPABASE_ANON_KEY: JSON.stringify(process.env.VITE_SUPABASE_ANON_KEY || ''),
+        VITE_APP_URL: JSON.stringify(process.env.VITE_APP_URL || 'https://dominauts.com'),
+        VITE_APP_VERSION: JSON.stringify(process.env.VITE_APP_VERSION || '2.0.0'),
+        VITE_STRIPE_PUBLISHABLE_KEY: JSON.stringify(process.env.VITE_STRIPE_PUBLISHABLE_KEY || ''),
+        VITE_GA_MEASUREMENT_ID: JSON.stringify(process.env.VITE_GA_MEASUREMENT_ID || ''),
+        VITE_SENTRY_DSN: JSON.stringify(process.env.VITE_SENTRY_DSN || ''),
+        VITE_ENABLE_ANALYTICS: JSON.stringify(process.env.VITE_ENABLE_ANALYTICS || 'true'),
+        VITE_ENABLE_MULTIPLAYER: JSON.stringify(process.env.VITE_ENABLE_MULTIPLAYER || 'true'),
+        VITE_ENABLE_TOURNAMENTS: JSON.stringify(process.env.VITE_ENABLE_TOURNAMENTS || 'false'),
+        VITE_ENABLE_ADS: JSON.stringify(process.env.VITE_ENABLE_ADS || 'false'),
+        VITE_ENABLE_IAP: JSON.stringify(process.env.VITE_ENABLE_IAP || 'true'),
+        VITE_ENABLE_AI: JSON.stringify(process.env.VITE_ENABLE_AI || 'true'),
+        VITE_ENABLE_HINTS: JSON.stringify(process.env.VITE_ENABLE_HINTS || 'true'),
+        VITE_MAX_PLAYERS: JSON.stringify(process.env.VITE_MAX_PLAYERS || '4'),
+        VITE_DEFAULT_GAME_MODE: JSON.stringify(process.env.VITE_DEFAULT_GAME_MODE || 'allfives'),
+        VITE_TURN_TIMEOUT: JSON.stringify(process.env.VITE_TURN_TIMEOUT || '30000'),
+        VITE_MAX_GAMES_PER_DAY: JSON.stringify(process.env.VITE_MAX_GAMES_PER_DAY || '100'),
+        VITE_API_BASE_URL: JSON.stringify(process.env.VITE_API_BASE_URL || '/api')
+      }
+    }),
+
     new HtmlWebpackPlugin({
       template: './index.html',
       filename: 'index.html',

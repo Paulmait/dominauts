@@ -190,8 +190,8 @@ export class QuickGame {
         // Draw pips
         this.ctx!.fillStyle = '#000000';
         this.ctx!.font = '16px Arial';
-        this.ctx!.fillText(tile.head.toString(), xPos + 25, yHandPos + 40);
-        this.ctx!.fillText(tile.tail.toString(), xPos + 25, yHandPos + 90);
+        this.ctx!.fillText(tile.left.toString(), xPos + 25, yHandPos + 40);
+        this.ctx!.fillText(tile.right.toString(), xPos + 25, yHandPos + 90);
 
         // Draw divider
         this.ctx!.beginPath();

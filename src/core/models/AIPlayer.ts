@@ -173,14 +173,14 @@ export class AIPlayer extends Player {
   private getResultingBoardEnds(move: { tile: Tile; side: 'head' | 'tail' }, board: Board): { head: number; tail: number } {
     const currentEnds = board.getEnds();
     if (!currentEnds) {
-      return { head: move.tile.head, tail: move.tile.tail };
+      return { head: move.tile.left, tail: move.tile.right };
     }
 
     if (move.side === 'head') {
-      const newHead = move.tile.head === currentEnds.head ? move.tile.tail : move.tile.head;
+      const newHead = move.tile.left === currentEnds.head ? move.tile.right : move.tile.left;
       return { head: newHead, tail: currentEnds.tail };
     } else {
-      const newTail = move.tile.tail === currentEnds.tail ? move.tile.head : move.tile.tail;
+      const newTail = move.tile.right === currentEnds.tail ? move.tile.left : move.tile.right;
       return { head: currentEnds.head, tail: newTail };
     }
   }
@@ -196,8 +196,8 @@ export class AIPlayer extends Player {
     }
 
     for (const tile of this.hand) {
-      counts.set(tile.head, (counts.get(tile.head) || 0) + 1);
-      counts.set(tile.tail, (counts.get(tile.tail) || 0) + 1);
+      counts.set(tile.left, (counts.get(tile.left) || 0) + 1);
+      counts.set(tile.right, (counts.get(tile.right) || 0) + 1);
     }
 
     return counts;
@@ -210,10 +210,10 @@ export class AIPlayer extends Player {
     let score = 0;
 
     // Prefer playing tiles with numbers we have fewer of
-    const headCount = tileCount.get(move.tile.head) || 0;
-    const tailCount = tileCount.get(move.tile.tail) || 0;
-    score += (7 - headCount) * 2;
-    score += (7 - tailCount) * 2;
+    const leftCount = tileCount.get(move.tile.left) || 0;
+    const rightCount = tileCount.get(move.tile.right) || 0;
+    score += (7 - leftCount) * 2;
+    score += (7 - rightCount) * 2;
 
     // Bonus for doubles (they're harder to play later)
     if (move.tile.isDouble()) {

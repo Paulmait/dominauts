@@ -1,0 +1,891 @@
+/* Victory Animations - Lightweight & Mobile-Friendly */
+
+/* Trophy Animations */
+.trophy-icon {
+  display: inline-block;
+  font-size: 3rem;
+  animation: trophySpin 2s ease-in-out infinite;
+}
+
+.trophy-icon.spin {
+  animation: trophySpin 2s ease-in-out infinite;
+}
+
+.trophy-icon.gold-spin {
+  animation: goldTrophySpin 1.5s ease-in-out infinite;
+  filter: drop-shadow(0 0 20px rgba(255, 215, 0, 0.8));
+}
+
+@keyframes trophySpin {
+  0%, 100% {
+    transform: rotateY(0deg) scale(1);
+  }
+  50% {
+    transform: rotateY(180deg) scale(1.1);
+  }
+}
+
+@keyframes goldTrophySpin {
+  0% {
+    transform: rotateY(0deg) scale(1);
+    filter: drop-shadow(0 0 20px rgba(255, 215, 0, 0.8));
+  }
+  50% {
+    transform: rotateY(180deg) scale(1.2);
+    filter: drop-shadow(0 0 40px rgba(255, 215, 0, 1));
+  }
+  100% {
+    transform: rotateY(360deg) scale(1);
+    filter: drop-shadow(0 0 20px rgba(255, 215, 0, 0.8));
+  }
+}
+
+/* Trophy Celebration */
+.trophy-celebration {
+  position: absolute;
+  top: 10%;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 100;
+}
+
+.trophy-spin {
+  font-size: 5rem;
+  animation: trophyCelebration 3s ease-in-out;
+  filter: drop-shadow(0 0 30px rgba(255, 215, 0, 0.8));
+}
+
+@keyframes trophyCelebration {
+  0% {
+    transform: scale(0) rotate(0deg);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.5) rotate(360deg);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1) rotate(720deg);
+    opacity: 0.8;
+  }
+}
+
+/* Confetti - Optimized for Mobile */
+.confetti-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 1;
+}
+
+.confetti {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  transform-origin: center;
+  animation: confettiFall linear;
+  will-change: transform;
+}
+
+@keyframes confettiFall {
+  0% {
+    transform: translateY(-100vh) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(100vh) rotate(720deg);
+    opacity: 0;
+  }
+}
+
+/* Fireworks for Six-Love */
+.fireworks-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.firework {
+  position: absolute;
+  bottom: 0;
+  animation: fireworkLaunch 2s ease-out forwards;
+}
+
+.explosion {
+  position: relative;
+  width: 4px;
+  height: 4px;
+  opacity: 0;
+  animation: explode 0.5s ease-out 0.8s forwards;
+}
+
+.spark {
+  position: absolute;
+  width: 3px;
+  height: 3px;
+  background: radial-gradient(circle, #ffd700, #ff6b6b);
+  border-radius: 50%;
+  animation: sparkFly 1s ease-out 0.8s forwards;
+}
+
+@keyframes fireworkLaunch {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(-60vh);
+  }
+}
+
+@keyframes explode {
+  0% {
+    opacity: 1;
+    transform: scale(0);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(20);
+  }
+}
+
+@keyframes sparkFly {
+  0% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(100px);
+  }
+}
+
+/* Six-Love Banner */
+.six-love-banner {
+  position: absolute;
+  top: 20%;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  text-align: center;
+  animation: bannerSlam 0.5s ease-out forwards;
+}
+
+.banner-text {
+  font-size: 3rem;
+  font-weight: bold;
+  background: linear-gradient(90deg, #ffd700, #ff6b6b, #ffd700);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0 0 30px rgba(255, 215, 0, 0.5);
+  animation: textGlow 1s ease-in-out infinite alternate;
+  letter-spacing: 3px;
+}
+
+.banner-subtitle {
+  font-size: 1.5rem;
+  color: #fff;
+  margin-top: 0.5rem;
+  animation: fadeInUp 0.5s ease-out 0.3s forwards;
+  opacity: 0;
+}
+
+.banner-icon {
+  display: inline-block;
+  margin: 0 1rem;
+  animation: iconBounce 1s ease-in-out infinite;
+}
+
+@keyframes bannerSlam {
+  0% {
+    transform: translateX(-50%) scale(3) rotate(15deg);
+    opacity: 0;
+  }
+  60% {
+    transform: translateX(-50%) scale(1.1) rotate(-2deg);
+  }
+  100% {
+    transform: translateX(-50%) scale(1) rotate(0deg);
+    opacity: 1;
+  }
+}
+
+@keyframes textGlow {
+  0% {
+    text-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+  }
+  100% {
+    text-shadow: 0 0 40px rgba(255, 215, 0, 0.8);
+  }
+}
+
+@keyframes iconBounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+/* Block Animation */
+.block-animation-container {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+  z-index: 5;
+}
+
+.domino-chain {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100px;
+}
+
+.domino-tile-anim {
+  position: absolute;
+  width: 40px;
+  height: 80px;
+  background: linear-gradient(135deg, #333, #555);
+  border: 2px solid #ffd700;
+  border-radius: 4px;
+  animation: dominoFall 0.3s ease-out forwards;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.domino-lock {
+  font-size: 1.5rem;
+  animation: lockAppear 0.3s ease-out 0.3s forwards;
+  opacity: 0;
+}
+
+.block-message {
+  text-align: center;
+  font-size: 2rem;
+  font-weight: bold;
+  color: #ff6b6b;
+  margin-top: 2rem;
+  animation: blockMessageAppear 0.5s ease-out 1s forwards;
+  opacity: 0;
+  text-shadow: 0 0 20px rgba(255, 107, 107, 0.5);
+}
+
+@keyframes dominoFall {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(25deg);
+  }
+}
+
+@keyframes lockAppear {
+  0% {
+    opacity: 0;
+    transform: scale(0);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes blockMessageAppear {
+  0% {
+    opacity: 0;
+    transform: scale(0.5);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Block animation in VS separator */
+.block-animation {
+  position: absolute;
+  font-size: 2rem;
+  animation: lockPulse 1s ease-in-out infinite;
+}
+
+@keyframes lockPulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.8;
+  }
+  50% {
+    transform: scale(1.2);
+    opacity: 1;
+  }
+}
+
+/* Streak Fire Animation */
+.streak-fire-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 3;
+}
+
+.fire-trail {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  height: 50%;
+}
+
+.flame {
+  position: absolute;
+  bottom: 0;
+  font-size: 2rem;
+  animation: flameRise linear;
+  opacity: 0.8;
+}
+
+@keyframes flameRise {
+  0% {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-50vh) scale(0.5);
+    opacity: 0;
+  }
+}
+
+.streak-banner {
+  position: absolute;
+  top: 30%;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 2rem;
+  background: linear-gradient(135deg, rgba(255, 107, 107, 0.9), rgba(255, 215, 0, 0.9));
+  border-radius: 12px;
+  animation: streakBannerAppear 0.5s ease-out forwards;
+}
+
+.streak-number {
+  font-size: 3rem;
+  font-weight: bold;
+  color: #fff;
+  text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+}
+
+.streak-text {
+  font-size: 1.5rem;
+  color: #fff;
+  font-weight: bold;
+}
+
+@keyframes streakBannerAppear {
+  0% {
+    transform: translateX(-50%) translateY(-100vh);
+  }
+  100% {
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+/* Stars Animation */
+.stars-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.star {
+  position: absolute;
+  font-size: 1rem;
+  animation: starTwinkle 2s ease-in-out infinite;
+}
+
+@keyframes starTwinkle {
+  0%, 100% {
+    opacity: 0;
+    transform: scale(0.5);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Defeat Animation */
+.defeat-animation {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.rain-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.raindrop {
+  position: absolute;
+  width: 2px;
+  height: 20px;
+  background: linear-gradient(180deg, transparent, rgba(100, 150, 255, 0.6));
+  animation: rainFall linear;
+}
+
+@keyframes rainFall {
+  0% {
+    transform: translateY(-100vh);
+  }
+  100% {
+    transform: translateY(100vh);
+  }
+}
+
+.defeat-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle, rgba(239, 68, 68, 0.1), transparent);
+  animation: defeatPulse 3s ease-in-out infinite;
+}
+
+@keyframes defeatPulse {
+  0%, 100% {
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 0.6;
+  }
+}
+
+.defeat-icon {
+  font-size: 3rem;
+  animation: defeatShake 0.5s ease-in-out;
+}
+
+@keyframes defeatShake {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-5px);
+  }
+  75% {
+    transform: translateX(5px);
+  }
+}
+
+/* Draw Animation */
+.draw-animation {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.handshake-icon {
+  font-size: 5rem;
+  animation: handshake 1s ease-in-out;
+}
+
+@keyframes handshake {
+  0%, 100% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(-10deg);
+  }
+  75% {
+    transform: rotate(10deg);
+  }
+}
+
+/* Ranking Section Animations */
+.ranking-section {
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+.ranking-section.animate-in {
+  animation: slideInUp 0.5s ease forwards;
+}
+
+.ranking-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.rank-card {
+  background: linear-gradient(135deg, rgba(255, 215, 0, 0.1), rgba(255, 193, 7, 0.1));
+  border: 2px solid #ffd700;
+  border-radius: 12px;
+  padding: 1rem;
+  text-align: center;
+  animation: rankCardAppear 0.5s ease-out forwards;
+  transform: scale(0.9);
+  opacity: 0;
+}
+
+.rank-card:nth-child(1) {
+  animation-delay: 0.1s;
+}
+
+.rank-card:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.rank-card:nth-child(3) {
+  animation-delay: 0.3s;
+}
+
+@keyframes rankCardAppear {
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.rank-number {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #ffd700;
+  text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+}
+
+.rank-label {
+  font-size: 0.9rem;
+  color: #fff;
+  margin-top: 0.5rem;
+}
+
+.rank-context {
+  font-size: 0.8rem;
+  color: #aaa;
+  margin-top: 0.25rem;
+}
+
+/* Streak Display */
+.streak-display {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: linear-gradient(135deg, rgba(255, 107, 107, 0.2), rgba(255, 165, 0, 0.2));
+  border: 2px solid #ff6b6b;
+  border-radius: 8px;
+  margin: 0.5rem;
+}
+
+.streak-display.flame {
+  animation: flameGlow 1s ease-in-out infinite alternate;
+}
+
+@keyframes flameGlow {
+  0% {
+    box-shadow: 0 0 10px rgba(255, 107, 107, 0.5);
+  }
+  100% {
+    box-shadow: 0 0 20px rgba(255, 107, 107, 0.8);
+  }
+}
+
+.streak-icon {
+  font-size: 1.5rem;
+  animation: flameDance 0.5s ease-in-out infinite alternate;
+}
+
+@keyframes flameDance {
+  0% {
+    transform: scale(1) rotate(-5deg);
+  }
+  100% {
+    transform: scale(1.1) rotate(5deg);
+  }
+}
+
+.streak-count {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #fff;
+}
+
+/* Enhanced Score Display */
+.score-display .winner {
+  animation: winnerGlow 2s ease-in-out infinite;
+}
+
+@keyframes winnerGlow {
+  0%, 100% {
+    filter: drop-shadow(0 0 10px rgba(16, 185, 129, 0.5));
+  }
+  50% {
+    filter: drop-shadow(0 0 20px rgba(16, 185, 129, 0.8));
+  }
+}
+
+.pips-remaining {
+  margin-top: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.pips-label {
+  color: #888;
+}
+
+.pips-value {
+  color: #ffd700;
+  font-weight: bold;
+  margin-left: 0.5rem;
+}
+
+/* Level Up Banner */
+.level-up-banner {
+  background: linear-gradient(90deg, #ffd700, #ffed4e, #ffd700);
+  color: #000;
+  padding: 1rem;
+  border-radius: 8px;
+  text-align: center;
+  font-weight: bold;
+  font-size: 1.2rem;
+  margin-bottom: 1rem;
+  animation: levelUpCelebration 1s ease-out;
+}
+
+@keyframes levelUpCelebration {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Count Up Animation */
+.count-up {
+  animation: countUp 1s ease-out;
+}
+
+@keyframes countUp {
+  0% {
+    transform: scale(0.5);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Progress Bar Animation */
+.progress-fill.animate-fill {
+  animation: fillProgress 1s ease-out;
+}
+
+@keyframes fillProgress {
+  0% {
+    width: 0%;
+  }
+}
+
+/* Pulse Animations */
+.pulse {
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+.pulse-on-hover:hover {
+  animation: pulseHover 0.3s ease-out;
+}
+
+@keyframes pulseHover {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* Glow Animation */
+.glow {
+  animation: glow 2s ease-in-out infinite alternate;
+}
+
+@keyframes glow {
+  0% {
+    box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+  }
+  100% {
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.8);
+  }
+}
+
+/* Slide Animations */
+.slide-up {
+  animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+  0% {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Pop In Animation */
+.pop-in {
+  animation: popIn 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+@keyframes popIn {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Bounce Animation */
+.bounce {
+  animation: bounce 1s ease-in-out infinite;
+}
+
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+/* Rotate Animation */
+.rotate {
+  animation: rotate 2s linear infinite;
+}
+
+@keyframes rotate {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Fade In Up Animation */
+@keyframes fadeInUp {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Mobile Optimizations */
+@media (max-width: 768px) {
+  /* Reduce particle counts on mobile */
+  .confetti-container .confetti:nth-child(n+20) {
+    display: none;
+  }
+
+  .stars-container .star:nth-child(n+10) {
+    display: none;
+  }
+
+  .fire-trail .flame:nth-child(n+10) {
+    display: none;
+  }
+
+  /* Simplify animations on mobile */
+  .trophy-icon {
+    animation-duration: 3s;
+  }
+
+  .banner-text {
+    font-size: 2rem;
+  }
+
+  .domino-tile-anim {
+    width: 30px;
+    height: 60px;
+  }
+
+  /* Reduce animation complexity */
+  @media (prefers-reduced-motion: reduce) {
+    * {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+/* Performance optimizations */
+.confetti,
+.flame,
+.star,
+.spark,
+.raindrop {
+  will-change: transform, opacity;
+  backface-visibility: hidden;
+  transform: translateZ(0);
+}

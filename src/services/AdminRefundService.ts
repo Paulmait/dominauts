@@ -647,10 +647,18 @@ class AdminRefundService {
     // Give user bonus coins as compensation
     const bonusCoins = Math.floor(amount * 100 * 1.1); // 10% bonus
 
+    // Get current coins
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('coins')
+      .eq('id', userId)
+      .single();
+
+    // Update with new total
     await supabase
       .from('profiles')
       .update({
-        coins: supabase.raw(`coins + ${bonusCoins}`)
+        coins: (profile?.coins || 0) + bonusCoins
       })
       .eq('id', userId);
 

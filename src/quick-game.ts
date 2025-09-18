@@ -4,49 +4,116 @@ import { ChickenFoot } from './modes/ChickenFoot';
 import { GameEngine } from './core/GameEngine';
 import { Player } from './core/Player';
 import { AIPlayer } from './core/AIPlayer';
+import { GameModeSelector } from './components/GameModeSelector';
 
 export class QuickGame {
   private gameEngine: GameEngine | null = null;
   private currentMode: string = 'block';
   private gameCanvas: HTMLCanvasElement | null = null;
   private ctx: CanvasRenderingContext2D | null = null;
+  private gameSelector: GameModeSelector | null = null;
+  private gameStarted: boolean = false;
 
   constructor() {
     this.initializeGame();
   }
 
   private initializeGame(): void {
-    // Get or create game canvas
+    // Create game selector container
+    const selectorContainer = document.createElement('div');
+    selectorContainer.id = 'game-selector-container';
+    document.body.appendChild(selectorContainer);
+
+    // Initialize game mode selector
+    this.gameSelector = new GameModeSelector('game-selector-container');
+    this.gameSelector.onSelect((mode) => {
+      this.currentMode = mode;
+      this.startNewGame();
+    });
+
+    // Get or create game canvas (hidden initially)
     this.gameCanvas = document.getElementById('game-canvas') as HTMLCanvasElement;
     if (!this.gameCanvas) {
       this.gameCanvas = document.createElement('canvas');
       this.gameCanvas.id = 'game-canvas';
       this.gameCanvas.width = 800;
       this.gameCanvas.height = 600;
+      this.gameCanvas.style.display = 'none';
       document.body.appendChild(this.gameCanvas);
     }
 
     this.ctx = this.gameCanvas.getContext('2d');
 
-    // Set up game mode selector
-    const modeSelector = document.getElementById('game-mode') as HTMLSelectElement;
-    if (modeSelector) {
-      modeSelector.addEventListener('change', (e) => {
-        this.currentMode = (e.target as HTMLSelectElement).value;
-      });
+    // Add back button for when game starts
+    this.createBackButton();
+  }
+
+  private createBackButton(): void {
+    const backBtn = document.createElement('button');
+    backBtn.id = 'back-to-menu';
+    backBtn.innerHTML = '← Back to Menu';
+    backBtn.style.cssText = `
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      padding: 10px 20px;
+      background: rgba(255, 255, 255, 0.1);
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      color: white;
+      border-radius: 8px;
+      cursor: pointer;
+      display: none;
+      z-index: 100;
+    `;
+    backBtn.addEventListener('click', () => this.backToMenu());
+    document.body.appendChild(backBtn);
+  }
+
+  private backToMenu(): void {
+    this.gameStarted = false;
+    if (this.gameCanvas) {
+      this.gameCanvas.style.display = 'none';
+    }
+    const selector = document.getElementById('game-selector-container');
+    if (selector) {
+      selector.style.display = 'block';
+    }
+    const backBtn = document.getElementById('back-to-menu');
+    if (backBtn) {
+      backBtn.style.display = 'none';
     }
 
-    // Set up start button
-    const startButton = document.getElementById('start-button');
-    if (startButton) {
-      startButton.addEventListener('click', () => this.startNewGame());
+    // Clean up old controls
+    const oldControls = document.querySelector('.controls');
+    if (oldControls) {
+      oldControls.style.display = 'flex';
     }
-
-    // Auto-start a game
-    this.startNewGame();
   }
 
   public startNewGame(): void {
+    this.gameStarted = true;
+
+    // Hide selector, show game
+    const selector = document.getElementById('game-selector-container');
+    if (selector) {
+      selector.style.display = 'none';
+    }
+
+    // Hide old controls
+    const oldControls = document.querySelector('.controls');
+    if (oldControls) {
+      (oldControls as HTMLElement).style.display = 'none';
+    }
+
+    // Show canvas and back button
+    if (this.gameCanvas) {
+      this.gameCanvas.style.display = 'block';
+    }
+    const backBtn = document.getElementById('back-to-menu');
+    if (backBtn) {
+      backBtn.style.display = 'block';
+    }
+
     // Clear any existing game
     if (this.gameEngine) {
       this.gameEngine.cleanup();
@@ -55,17 +122,16 @@ export class QuickGame {
     // Create game mode
     let gameMode;
     switch (this.currentMode) {
-      case 'usa':
       case 'allfives':
         gameMode = new AllFives();
         break;
-      case 'mexico':
       case 'chicken':
         gameMode = new ChickenFoot();
         break;
       case 'cuba':
         gameMode = new BlockDominoes('cuba');
         break;
+      case 'block':
       default:
         gameMode = new BlockDominoes('classic');
     }

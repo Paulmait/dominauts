@@ -30,6 +30,7 @@ export const ENV = {
   ANALYTICS: {
     GA_ID: process.env.VITE_GA_MEASUREMENT_ID || '',
     SENTRY_DSN: process.env.VITE_SENTRY_DSN || '',
+    MIXPANEL_TOKEN: process.env.VITE_MIXPANEL_TOKEN || '',
     enabled: process.env.VITE_ENABLE_ANALYTICS !== 'false'
   },
 

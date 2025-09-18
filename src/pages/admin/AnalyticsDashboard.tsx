@@ -91,14 +91,14 @@ export const AnalyticsDashboard: React.FC = () => {
       ]);
 
       setMetrics({
-        dau: userMetrics.dau,
-        wau: userMetrics.wau,
-        mau: userMetrics.mau,
-        retention: userMetrics.retention,
+        dau: userMetrics.dau || 0,
+        wau: userMetrics.wau || 0,
+        mau: userMetrics.mau || 0,
+        retention: userMetrics.retention || { day1: 0, day7: 0, day30: 0 },
         sessionMetrics: sessionData,
         gameMetrics: gameMetrics,
         revenueMetrics: revenueMetrics,
-        userFlow: userMetrics.flow,
+        userFlow: userMetrics.flow || { signups: 0, activations: 0, firstPurchase: 0, churn: 0 },
         deviceStats: deviceData,
         geoStats: geoData
       });
@@ -127,17 +127,17 @@ export const AnalyticsDashboard: React.FC = () => {
   };
 
   const getUserMetrics = async (startDate: Date, endDate: Date) => {
-    const { data: dailyActive } = await supabase
+    const { count: dailyActive } = await supabase
       .from('profiles')
       .select('*', { count: 'exact', head: true })
       .gte('last_active', new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString());
 
-    const { data: weeklyActive } = await supabase
+    const { count: weeklyActive } = await supabase
       .from('profiles')
       .select('*', { count: 'exact', head: true })
       .gte('last_active', new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString());
 
-    const { data: monthlyActive } = await supabase
+    const { count: monthlyActive } = await supabase
       .from('profiles')
       .select('*', { count: 'exact', head: true })
       .gte('last_active', new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString());
@@ -149,7 +149,7 @@ export const AnalyticsDashboard: React.FC = () => {
     });
 
     // User flow
-    const { data: signups } = await supabase
+    const { count: signupsCount } = await supabase
       .from('profiles')
       .select('*', { count: 'exact', head: true })
       .gte('created_at', startDate.toISOString());
@@ -161,6 +161,7 @@ export const AnalyticsDashboard: React.FC = () => {
       .gte('created_at', startDate.toISOString());
 
     const uniquePurchasers = new Set(purchases?.map(p => p.user_id)).size;
+    const signups = signupsCount || 0;
 
     return {
       dau: dailyActive || 0,
@@ -168,10 +169,10 @@ export const AnalyticsDashboard: React.FC = () => {
       mau: monthlyActive || 0,
       retention: retention || { day1: 0, day7: 0, day30: 0 },
       flow: {
-        signups: signups || 0,
-        activations: Math.floor((signups || 0) * 0.7), // Mock
+        signups: signups,
+        activations: Math.floor(signups * 0.7), // Mock
         firstPurchase: uniquePurchasers,
-        churn: Math.floor((signups || 0) * 0.1) // Mock
+        churn: Math.floor(signups * 0.1) // Mock
       }
     };
   };

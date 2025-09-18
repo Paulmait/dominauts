@@ -187,6 +187,7 @@ module.exports = {
         VITE_STRIPE_PUBLISHABLE_KEY: JSON.stringify(process.env.VITE_STRIPE_PUBLISHABLE_KEY || ''),
         VITE_GA_MEASUREMENT_ID: JSON.stringify(process.env.VITE_GA_MEASUREMENT_ID || ''),
         VITE_SENTRY_DSN: JSON.stringify(process.env.VITE_SENTRY_DSN || ''),
+        VITE_MIXPANEL_TOKEN: JSON.stringify(process.env.VITE_MIXPANEL_TOKEN || ''),
         VITE_ENABLE_ANALYTICS: JSON.stringify(process.env.VITE_ENABLE_ANALYTICS || 'true'),
         VITE_ENABLE_MULTIPLAYER: JSON.stringify(process.env.VITE_ENABLE_MULTIPLAYER || 'true'),
         VITE_ENABLE_TOURNAMENTS: JSON.stringify(process.env.VITE_ENABLE_TOURNAMENTS || 'false'),

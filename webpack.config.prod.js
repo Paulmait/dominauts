@@ -11,7 +11,7 @@ const imageminPngquant = require('imagemin-pngquant');
 module.exports = {
   mode: 'production',
   entry: {
-    main: './src/quick-game.ts',
+    main: './src/simple-game.ts',
     app: './src/index.ts',
     // Code splitting for game modes
     allfives: './src/modes/AllFives.ts',

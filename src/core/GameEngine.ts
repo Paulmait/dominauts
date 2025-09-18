@@ -351,10 +351,23 @@ export class GameEngine extends EventEmitter {
     if (this.moveTimer) {
       clearTimeout(this.moveTimer);
     }
-    
+
     this.state = this.initializeGameState(this.state.config);
     this.isPaused = false;
     this.emit('restart');
+  }
+
+  initialize(): void {
+    // Alias for starting/restarting the game
+    if (this.state.round === 0) {
+      this.state.round = 1;
+      this.state.isGameOver = false;
+      this.emit('gameStart');
+
+      if (this.getCurrentPlayer().isAI) {
+        this.scheduleAIMove();
+      }
+    }
   }
 
   getState(): GameState {

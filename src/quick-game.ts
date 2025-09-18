@@ -2,8 +2,6 @@ import { AllFives } from './modes/AllFives';
 import { BlockDominoes } from './modes/BlockDominoes';
 import { ChickenFoot } from './modes/ChickenFoot';
 import { GameEngine } from './core/GameEngine';
-import { Player } from './core/models/Player';
-import { AIPlayer } from './core/models/AIPlayer';
 import { GameModeSelector } from './components/GameModeSelector';
 
 export class QuickGame {
@@ -116,7 +114,8 @@ export class QuickGame {
 
     // Clear any existing game
     if (this.gameEngine) {
-      this.gameEngine.cleanup();
+      // Reset the game engine
+      this.gameEngine = null;
     }
 
     // Create game mode
@@ -136,15 +135,19 @@ export class QuickGame {
         gameMode = new BlockDominoes('classic');
     }
 
-    // Create players
-    const players = [
-      new Player('You', false),
-      new AIPlayer('AI Player', 'medium')
-    ];
+    // Create game configuration
+    const config = {
+      playerCount: 2,
+      playerNames: ['You', 'AI Player'],
+      aiDifficulty: 'medium' as const,
+      startingHandSize: 7,
+      maxScore: 150,
+      turnTimeLimit: 30000
+    };
 
-    // Create and start game engine
-    this.gameEngine = new GameEngine(gameMode, players);
-    this.gameEngine.startGame();
+    // Create and initialize game engine
+    this.gameEngine = new GameEngine(gameMode, config);
+    this.gameEngine.initialize();
 
     // Set up game display
     this.updateDisplay();
@@ -167,7 +170,8 @@ export class QuickGame {
     this.ctx.fillText(`Current Player: ${this.gameEngine.getCurrentPlayer()?.name || 'None'}`, 10, 30);
 
     // Draw scores
-    const players = this.gameEngine.getPlayers();
+    const gameState = this.gameEngine.getState();
+    const players = gameState.players;
     let yPos = 60;
     players.forEach(player => {
       this.ctx!.fillText(`${player.name}: ${player.score} points`, 10, yPos);
@@ -177,7 +181,7 @@ export class QuickGame {
     // Draw player hand
     const currentPlayer = this.gameEngine.getCurrentPlayer();
     if (currentPlayer && !currentPlayer.isAI) {
-      const hand = currentPlayer.getHand();
+      const hand = currentPlayer.hand;
       let xPos = 50;
       const yHandPos = 400;
 
@@ -225,7 +229,7 @@ export class QuickGame {
         const currentPlayer = this.gameEngine!.getCurrentPlayer();
 
         if (currentPlayer && !currentPlayer.isAI) {
-          const hand = currentPlayer.getHand();
+          const hand = currentPlayer.hand;
           if (tileIndex >= 0 && tileIndex < hand.length) {
             // Try to play the selected tile
             const tile = hand[tileIndex];
@@ -236,7 +240,8 @@ export class QuickGame {
 
               // Let AI play after a delay
               setTimeout(() => {
-                if (this.gameEngine && !this.gameEngine.state.isGameOver) {
+                const state = this.gameEngine?.getState();
+                if (this.gameEngine && state && !state.isGameOver) {
                   // Simple AI move - just play first valid tile
                   this.gameEngine.nextTurn();
                   this.updateDisplay();

@@ -173,16 +173,5 @@
   ],
   "trailingSlash": false,
   "cleanUrls": true,
-  "functions": {
-    "api/stripe/create-checkout-session.ts": {
-      "maxDuration": 10
-    },
-    "api/stripe/webhook.ts": {
-      "maxDuration": 10
-    },
-    "api/*.ts": {
-      "maxDuration": 10
-    }
-  },
   "regions": ["iad1"]
 }

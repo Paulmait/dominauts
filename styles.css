@@ -14,6 +14,7 @@ body {
   min-height: 100vh;
   overflow-x: hidden;
   touch-action: manipulation;
+  position: relative;
 }
 
 h1 {
@@ -172,6 +173,24 @@ button:active {
 
 .hidden {
   display: none !important;
+}
+
+/* Game Canvas Styles */
+#game-canvas {
+  display: block;
+  margin: 20px auto;
+  border: 3px solid rgba(0, 212, 255, 0.3);
+  border-radius: 10px;
+  box-shadow: 0 5px 30px rgba(0, 212, 255, 0.2);
+  background: #2a4d3a;
+  cursor: pointer;
+  max-width: 100%;
+  height: auto;
+}
+
+/* Theme Toggle Button Override */
+.theme-toggle-btn {
+  z-index: 50 !important;
 }
 
 /* Mobile Responsive Styles */

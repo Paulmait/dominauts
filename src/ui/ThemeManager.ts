@@ -265,23 +265,34 @@ export class ThemeManager {
     style.textContent = `
       .theme-toggle-btn {
         position: fixed;
-        top: 1rem;
-        right: 1rem;
-        width: 50px;
-        height: 50px;
+        bottom: 1rem;
+        left: 1rem;
+        width: 40px;
+        height: 40px;
         border-radius: 50%;
         background: var(--color-surface, #fff);
         border: 2px solid var(--color-primary, #667eea);
-        font-size: 1.5rem;
+        font-size: 1.2rem;
         cursor: pointer;
-        z-index: 1000;
+        z-index: 100;
         transition: all 0.3s ease;
         box-shadow: var(--shadow-lg);
+        opacity: 0.8;
       }
 
       .theme-toggle-btn:hover {
         transform: scale(1.1) rotate(20deg);
         background: var(--color-primary, #667eea);
+        opacity: 1;
+      }
+
+      @media (max-width: 768px) {
+        .theme-toggle-btn {
+          bottom: 0.5rem;
+          left: 0.5rem;
+          width: 35px;
+          height: 35px;
+        }
       }
     `;
     

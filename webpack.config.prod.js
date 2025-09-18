@@ -11,7 +11,7 @@ const imageminPngquant = require('imagemin-pngquant');
 module.exports = {
   mode: 'production',
   entry: {
-    main: './src/minimal-game.ts'
+    main: './src/playable-game.ts'
   },
 
   output: {

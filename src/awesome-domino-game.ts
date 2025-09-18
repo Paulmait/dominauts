@@ -94,6 +94,10 @@ export class AwesomeDominoGame {
   private showHint: boolean = false;
   private achievements: Achievement[] = [];
   private unlockedFeatures: Set<string> = new Set();
+  private failedAttempts: number = 0;
+  private lastMoveTime: number = 0;
+  private showTutorial: boolean = true;
+  private tutorialStep: number = 0;
 
   // Audio Context (for sound effects)
   private audioContext: AudioContext | null = null;
@@ -519,12 +523,18 @@ export class AwesomeDominoGame {
     // Initialize game
     this.gameStarted = true;
     this.gameStartTime = Date.now();
+    this.lastMoveTime = Date.now();
     this.createDominoes();
     this.dealTiles();
     this.setupPowerUps();
+    this.addGameControls();
+
+    // Show tutorial for new players
+    if (this.showTutorial && difficulty === 'easy') {
+      this.showGameTutorial();
+    }
 
     this.playSound('click');
-    this.createParticles(window.innerWidth / 2, window.innerHeight / 2, 'star', 20);
   }
 
   private createDominoes(): void {
@@ -585,7 +595,7 @@ export class AwesomeDominoGame {
   private setupPowerUps(): void {
     const powerUpTypes: PowerUp['type'][] = ['hint', 'undo', 'peek', 'double-score'];
     const y = window.innerHeight - 250;
-    const spacing = 80;
+    const spacing = 100;
     const startX = (window.innerWidth - (powerUpTypes.length - 1) * spacing) / 2;
 
     this.powerUps = powerUpTypes.map((type, index) => ({
@@ -596,6 +606,172 @@ export class AwesomeDominoGame {
       cooldown: 0,
       icon: this.getPowerUpIcon(type)
     }));
+  }
+
+  private addGameControls(): void {
+    // Pause button
+    const pauseBtn = document.createElement('button');
+    pauseBtn.id = 'pauseBtn';
+    pauseBtn.innerHTML = '⏸️';
+    pauseBtn.title = 'Pause Game';
+    pauseBtn.style.cssText = `
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      width: 50px;
+      height: 50px;
+      background: rgba(0, 0, 0, 0.5);
+      border: 2px solid white;
+      border-radius: 50%;
+      color: white;
+      font-size: 24px;
+      cursor: pointer;
+      z-index: 1000;
+      transition: all 0.3s;
+    `;
+    pauseBtn.onclick = () => this.togglePause();
+    document.body.appendChild(pauseBtn);
+
+    // Reset button
+    const resetBtn = document.createElement('button');
+    resetBtn.id = 'resetBtn';
+    resetBtn.innerHTML = '🔄';
+    resetBtn.title = 'Reset Game';
+    resetBtn.style.cssText = `
+      position: fixed;
+      top: 20px;
+      right: 80px;
+      width: 50px;
+      height: 50px;
+      background: rgba(0, 0, 0, 0.5);
+      border: 2px solid white;
+      border-radius: 50%;
+      color: white;
+      font-size: 24px;
+      cursor: pointer;
+      z-index: 1000;
+      transition: all 0.3s;
+    `;
+    resetBtn.onclick = () => this.resetGame();
+    document.body.appendChild(resetBtn);
+
+    // Help button
+    const helpBtn = document.createElement('button');
+    helpBtn.id = 'helpBtn';
+    helpBtn.innerHTML = '❓';
+    helpBtn.title = 'Show Help';
+    helpBtn.style.cssText = `
+      position: fixed;
+      top: 20px;
+      right: 140px;
+      width: 50px;
+      height: 50px;
+      background: rgba(0, 0, 0, 0.5);
+      border: 2px solid white;
+      border-radius: 50%;
+      color: white;
+      font-size: 24px;
+      cursor: pointer;
+      z-index: 1000;
+      transition: all 0.3s;
+    `;
+    helpBtn.onclick = () => this.showGameTutorial();
+    document.body.appendChild(helpBtn);
+  }
+
+  private togglePause(): void {
+    this.isPaused = !this.isPaused;
+    const pauseBtn = document.getElementById('pauseBtn');
+    if (pauseBtn) {
+      pauseBtn.innerHTML = this.isPaused ? '▶️' : '⏸️';
+    }
+
+    if (this.isPaused) {
+      this.showMessage('Game Paused', 0);
+    } else {
+      const msg = document.querySelector('[style*="Game Paused"]');
+      if (msg) msg.remove();
+    }
+  }
+
+  private resetGame(): void {
+    if (confirm('Are you sure you want to reset the game?')) {
+      location.reload();
+    }
+  }
+
+  private showGameTutorial(): void {
+    const tutorial = document.createElement('div');
+    tutorial.id = 'gameTutorial';
+    tutorial.style.cssText = `
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.9);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 3000;
+    `;
+
+    tutorial.innerHTML = `
+      <div style="background: rgba(255,255,255,0.1); padding: 40px; border-radius: 20px; max-width: 600px; max-height: 80vh; overflow-y: auto;">
+        <h2 style="color: white; text-align: center; margin-bottom: 30px;">🎮 How to Play Dominoes 🎮</h2>
+
+        <div style="color: white; font-size: 18px; line-height: 1.6;">
+          <h3 style="color: #00ff00;">🎯 Goal:</h3>
+          <p>Be the first to play all your dominoes or have the least pips when blocked!</p>
+
+          <h3 style="color: #00ff00; margin-top: 20px;">🎲 How to Play:</h3>
+          <ol style="margin-left: 20px;">
+            <li>Drag a domino from your hand to the board</li>
+            <li>Match the numbers on your domino with the ends of the chain</li>
+            <li>If you can't play, click the PASS button</li>
+            <li>First to play all dominoes wins!</li>
+          </ol>
+
+          <h3 style="color: #00ff00; margin-top: 20px;">✨ Power-Ups (Bottom of screen):</h3>
+          <div style="margin-left: 20px;">
+            <p>💡 <b>Hint:</b> Shows you a valid move (glowing green)</p>
+            <p>↩️ <b>Undo:</b> Take back your last move</p>
+            <p>👁️ <b>Peek:</b> See how many tiles AI has</p>
+            <p>2️⃣ <b>Double Score:</b> Double points for next 3 moves (All Fives mode)</p>
+          </div>
+
+          <h3 style="color: #00ff00; margin-top: 20px;">🎮 Game Modes:</h3>
+          <div style="margin-left: 20px;">
+            <p><b>Classic:</b> Standard dominoes - just match the numbers</p>
+            <p><b>All Fives:</b> Score points when ends add to 5, 10, 15, etc.</p>
+            <p><b>Block:</b> Strategic play - block your opponent!</p>
+          </div>
+
+          <h3 style="color: #00ff00; margin-top: 20px;">💡 Tips:</h3>
+          <ul style="margin-left: 20px;">
+            <li>Green glow = valid move</li>
+            <li>Red = can't play there</li>
+            <li>Watch the tile counts to track AI's progress</li>
+            <li>Use power-ups wisely - they have cooldowns!</li>
+          </ul>
+        </div>
+
+        <button onclick="document.getElementById('gameTutorial').remove()" style="
+          margin-top: 30px;
+          padding: 15px 40px;
+          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          border: none;
+          color: white;
+          font-size: 18px;
+          border-radius: 30px;
+          cursor: pointer;
+          width: 100%;
+        ">Got it! Let's Play! 🎲</button>
+      </div>
+    `;
+
+    document.body.appendChild(tutorial);
+    this.showTutorial = false;
   }
 
   private getPowerUpIcon(type: PowerUp['type']): string {
@@ -624,6 +800,15 @@ export class AwesomeDominoGame {
   }
 
   private update(): void {
+    if (this.isPaused) return;
+
+    // Check for inactivity and show hint
+    if (this.gameStarted && this.currentPlayer === 'player' &&
+        (Date.now() - this.lastMoveTime) > 20000 && !this.showHint) {
+      this.autoShowHint();
+      this.lastMoveTime = Date.now(); // Reset to avoid spamming hints
+    }
+
     // Update animations
     this.pulseAnimation = Math.sin(this.animationFrame * 0.05) * 0.5 + 0.5;
     this.backgroundHue = (this.backgroundHue + 0.1) % 360;
@@ -891,24 +1076,44 @@ export class AwesomeDominoGame {
       ctx.globalAlpha = powerUp.active ? 1 : 0.3;
       ctx.fillStyle = powerUp.active ? 'rgba(255, 215, 0, 0.2)' : 'rgba(100, 100, 100, 0.2)';
       ctx.beginPath();
-      ctx.arc(0, 0, 30, 0, Math.PI * 2);
+      ctx.arc(0, 0, 35, 0, Math.PI * 2);
       ctx.fill();
+
+      // Draw border
+      ctx.strokeStyle = powerUp.active ? 'rgba(255, 215, 0, 0.5)' : 'rgba(100, 100, 100, 0.5)';
+      ctx.lineWidth = 2;
+      ctx.stroke();
 
       // Draw icon
       ctx.font = '28px Arial';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
-      ctx.fillText(powerUp.icon, 0, 0);
+      ctx.fillText(powerUp.icon, 0, -5);
+
+      // Draw label
+      ctx.fillStyle = 'white';
+      ctx.font = 'bold 11px Arial';
+      const label = this.getPowerUpLabel(powerUp.type);
+      ctx.fillText(label, 0, 25);
 
       // Draw cooldown
       if (powerUp.cooldown > 0) {
-        ctx.fillStyle = 'white';
+        ctx.fillStyle = 'yellow';
         ctx.font = '14px Arial';
-        ctx.fillText(Math.ceil(powerUp.cooldown) + 's', 0, 20);
+        ctx.fillText(Math.ceil(powerUp.cooldown) + 's', 0, 45);
       }
 
       ctx.restore();
     });
+  }
+
+  private getPowerUpLabel(type: PowerUp['type']): string {
+    switch (type) {
+      case 'hint': return 'HINT';
+      case 'undo': return 'UNDO';
+      case 'peek': return 'PEEK';
+      case 'double-score': return '2X SCORE';
+    }
   }
 
   private drawScore(): void {
@@ -1075,6 +1280,8 @@ export class AwesomeDominoGame {
   }
 
   private handleMouseDown(e: MouseEvent): void {
+    if (this.isPaused) return;
+
     const x = e.clientX;
     const y = e.clientY;
 
@@ -1086,13 +1293,14 @@ export class AwesomeDominoGame {
         this.dragOffset.y = y - tile.y;
         tile.isDragging = true;
         this.playSound('click');
+        this.failedAttempts = 0; // Reset failed attempts when picking up tile
         break;
       }
     }
 
     // Check power-ups
     this.powerUps.forEach(powerUp => {
-      if (powerUp.active && this.isPointInCircle(x, y, powerUp.x, powerUp.y, 30)) {
+      if (powerUp.active && this.isPointInCircle(x, y, powerUp.x, powerUp.y, 35)) {
         this.usePowerUp(powerUp);
       }
     });
@@ -1118,9 +1326,24 @@ export class AwesomeDominoGame {
   }
 
   private handleMouseUp(e: MouseEvent): void {
+    if (this.isPaused) return;
+
     if (this.draggedTile && this.validDropZone) {
       this.playTile(this.draggedTile, this.validDropZone);
+      this.lastMoveTime = Date.now();
     } else if (this.draggedTile) {
+      // Invalid move attempt
+      if (this.draggedTile.y < window.innerHeight - 200) {
+        this.failedAttempts++;
+        this.playSound('error');
+
+        // Show hint after 3 failed attempts or 30 seconds of inactivity
+        if (this.failedAttempts >= 3 || (Date.now() - this.lastMoveTime) > 30000) {
+          this.autoShowHint();
+          this.failedAttempts = 0;
+        }
+      }
+
       // Return tile to hand
       this.draggedTile.isDragging = false;
       this.arrangePlayerHand();
@@ -1128,6 +1351,29 @@ export class AwesomeDominoGame {
 
     this.draggedTile = null;
     this.validDropZone = null;
+  }
+
+  private autoShowHint(): void {
+    // Find a valid move
+    for (const tile of this.playerHand) {
+      if (this.canPlayOnSide(tile, 'left')) {
+        this.hints = [{ tile, side: 'left' }];
+        this.showHint = true;
+        this.showMessage('Hint: Try this tile! (Green glow)', 5000);
+        setTimeout(() => this.showHint = false, 5000);
+        return;
+      }
+      if (this.canPlayOnSide(tile, 'right')) {
+        this.hints = [{ tile, side: 'right' }];
+        this.showHint = true;
+        this.showMessage('Hint: Try this tile! (Green glow)', 5000);
+        setTimeout(() => this.showHint = false, 5000);
+        return;
+      }
+    }
+
+    // No valid moves
+    this.showMessage('No valid moves! Click PASS button.', 3000);
   }
 
   private handleTouchStart(e: TouchEvent): void {
@@ -1230,10 +1476,9 @@ export class AwesomeDominoGame {
     // Update score
     this.updateScore(tile);
 
-    // Effects
+    // Effects (minimal, no particles)
     this.playSound('place');
-    this.screenShake = 5;
-    this.createParticles(tile.x, tile.y, 'sparkle', 10);
+    this.screenShake = 3;
 
     // Check win
     if (this.playerHand.length === 0) {
@@ -1440,23 +1685,31 @@ export class AwesomeDominoGame {
   }
 
   private showMessage(text: string, duration: number = 2000): void {
+    // Remove existing messages
+    const existing = document.querySelector('[style*="transform: translate(-50%, -50%)"]');
+    if (existing && !existing.textContent?.includes('Paused')) existing.remove();
+
     const msg = document.createElement('div');
     msg.style.cssText = `
       position: fixed;
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      background: rgba(0, 0, 0, 0.8);
+      background: rgba(0, 0, 0, 0.9);
       color: white;
       padding: 20px 40px;
       font-size: 24px;
       border-radius: 10px;
+      border: 2px solid rgba(255, 255, 255, 0.3);
       z-index: 2000;
       animation: fadeIn 0.3s ease-in;
     `;
     msg.textContent = text;
     document.body.appendChild(msg);
-    setTimeout(() => msg.remove(), duration);
+
+    if (duration > 0) {
+      setTimeout(() => msg.remove(), duration);
+    }
   }
 
   private chooseBestMove(moves: { tile: Domino, side: 'left' | 'right' }[]): any {
@@ -1495,7 +1748,7 @@ export class AwesomeDominoGame {
       this.unlockAchievement('combo-master');
     }
 
-    // Celebration effects
+    // Celebration confetti only for player wins
     for (let i = 0; i < 100; i++) {
       setTimeout(() => {
         this.createParticles(
@@ -1669,10 +1922,11 @@ export class AwesomeDominoGame {
     }
 
     powerUp.active = false;
-    powerUp.cooldown = 30; // 30 second cooldown
+    powerUp.cooldown = 15; // 15 second cooldown (reduced from 30)
 
     this.playSound('powerup');
-    this.createParticles(powerUp.x, powerUp.y, 'sparkle', 15);
+    // Small visual feedback without particles
+    this.screenShake = 2;
   }
 
   private showHintPowerUp(): void {
@@ -1681,31 +1935,37 @@ export class AwesomeDominoGame {
     for (const tile of this.playerHand) {
       if (this.canPlayOnSide(tile, 'left')) {
         this.hints.push({ tile, side: 'left' });
+        this.showMessage('Hint: Green glowing tile can be played on the left!', 5000);
         break;
       }
       if (this.canPlayOnSide(tile, 'right')) {
         this.hints.push({ tile, side: 'right' });
+        this.showMessage('Hint: Green glowing tile can be played on the right!', 5000);
         break;
       }
     }
 
+    if (this.hints.length === 0) {
+      this.showMessage('No valid moves! You must pass.', 3000);
+    }
+
     this.showHint = true;
-    setTimeout(() => this.showHint = false, 5000);
+    setTimeout(() => this.showHint = false, 7000);
   }
 
   private undoLastMove(): void {
-    // Implementation for undo
-    console.log('Undo feature - to be implemented');
+    // Undo not implemented yet
+    this.showMessage('Undo feature coming soon!', 2000);
   }
 
   private peekAIHand(): void {
-    // Show AI's tiles briefly
-    console.log('AI has', this.aiHand.length, 'tiles');
+    // Show AI's tile count prominently
+    this.showMessage(`AI has ${this.aiHand.length} tiles remaining!`, 3000);
   }
 
   private activateDoubleScore(): void {
-    // Double scoring for next 3 moves
-    console.log('Double score activated');
+    // Double scoring message
+    this.showMessage('2X Score activated for next 3 moves! (All Fives mode)', 4000);
   }
 
   private toggleHints(): void {

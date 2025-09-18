@@ -32,9 +32,24 @@ export class SimpleDominoGame {
   }
 
   private initializeGame(): void {
+    // Hide old HTML elements first
+    const oldTitle = document.querySelector('h1');
+    if (oldTitle) oldTitle.style.display = 'none';
+
+    const oldControls = document.querySelector('.controls') as HTMLElement;
+    if (oldControls) oldControls.style.display = 'none';
+
+    const oldElements = ['#how-to-play', '#turn-info', '#scoreboard', '#game-board',
+                        '#player-hand', '#example-layout', '#modal', '#restart-button'];
+    oldElements.forEach(selector => {
+      const el = document.querySelector(selector) as HTMLElement;
+      if (el) el.style.display = 'none';
+    });
+
     // Create game selector
     const selectorContainer = document.createElement('div');
     selectorContainer.id = 'game-selector';
+    selectorContainer.style.display = 'block';
     document.body.appendChild(selectorContainer);
 
     this.gameSelector = new GameModeSelector('game-selector');

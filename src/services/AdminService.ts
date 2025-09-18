@@ -306,7 +306,7 @@ export class AdminService {
 
     return transactions?.map(t => ({
       id: t.id,
-      username: t.profiles?.username || 'Unknown',
+      username: (t as any).profiles?.username || 'Unknown',
       type: t.product_id?.includes('coins') ? 'Coins' : t.product_id?.includes('premium') ? 'Subscription' : 'Other',
       amount: t.amount,
       status: t.status,

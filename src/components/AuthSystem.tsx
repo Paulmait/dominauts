@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { soundSystem } from '../services/SoundSystem';
+import { authApiClient } from '../services/AuthApiClient';
 
 interface AuthSystemProps {
   onLogin: (user: any) => void;
@@ -42,36 +43,25 @@ export const AuthSystem: React.FC<AuthSystemProps> = ({ onLogin, onClose }) => {
         throw new Error('Invalid email address');
       }
 
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      let response;
 
-      // Check for admin login
-      if (email === 'admin@cienrios.com' && password === 'Admin@2025!' && adminCode === 'DOMINO-MASTER-2025') {
-        // Admin login
-        const adminUser = {
-          id: 'admin-001',
-          email,
-          username: 'Administrator',
-          role: 'admin',
-          permissions: ['all'],
-          isAdmin: true
-        };
-        onLogin(adminUser);
-        soundSystem.play('levelUp');
-        return;
+      // Check if admin login
+      if (adminCode) {
+        response = await authApiClient.adminLogin(email, password, adminCode);
+      } else {
+        response = await authApiClient.login(email, password);
       }
 
-      // Regular user login
-      const user = {
-        id: Math.random().toString(36).substr(2, 9),
-        email,
-        username: email.split('@')[0],
-        role: 'player',
-        isAdmin: false
-      };
-
-      onLogin(user);
-      soundSystem.play('success');
+      if (response.success && response.user) {
+        const user = {
+          ...response.user,
+          isAdmin: response.user.role === 'admin'
+        };
+        onLogin(user);
+        soundSystem.play(user.isAdmin ? 'levelUp' : 'success');
+      } else {
+        throw new Error(response.error || 'Login failed');
+      }
     } catch (err: any) {
       setError(err.message);
       soundSystem.play('error');
@@ -115,12 +105,18 @@ export const AuthSystem: React.FC<AuthSystemProps> = ({ onLogin, onClose }) => {
         throw new Error('Passwords do not match');
       }
 
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // Call API
+      const response = await authApiClient.register(email, username, password);
 
-      setSuccess('Registration successful! Please log in.');
-      setMode('login');
-      soundSystem.play('achievement');
+      if (response.success) {
+        setSuccess('Registration successful! You are now logged in.');
+        if (response.user) {
+          onLogin(response.user);
+        }
+        soundSystem.play('achievement');
+      } else {
+        throw new Error(response.error || 'Registration failed');
+      }
     } catch (err: any) {
       setError(err.message);
       soundSystem.play('error');
@@ -185,13 +181,17 @@ export const AuthSystem: React.FC<AuthSystemProps> = ({ onLogin, onClose }) => {
           throw new Error('Passwords do not match');
         }
 
-        // Simulate password reset
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        // Reset password using API
+        const response = await authApiClient.resetPassword(resetCode, newPassword);
 
-        setSuccess('Password reset successful! Please log in.');
-        setMode('login');
-        setStep('email');
-        soundSystem.play('levelUp');
+        if (response.success) {
+          setSuccess('Password reset successful! Please log in.');
+          setMode('login');
+          setStep('email');
+          soundSystem.play('levelUp');
+        } else {
+          throw new Error(response.error || 'Failed to reset password');
+        }
       }
     } catch (err: any) {
       setError(err.message);

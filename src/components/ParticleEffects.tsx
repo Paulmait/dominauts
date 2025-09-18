@@ -1,7 +1,5 @@
-import React, { useCallback, useEffect } from 'react';
+import React from 'react';
 import { Particles } from '@tsparticles/react';
-import { loadSlim } from '@tsparticles/slim';
-import type { Container, Engine } from '@tsparticles/engine';
 
 interface ParticleEffectsProps {
   type?: 'ambient' | 'celebration' | 'explosion' | 'stars';
@@ -12,15 +10,6 @@ export const ParticleEffects: React.FC<ParticleEffectsProps> = ({
   type = 'ambient',
   color = '#00d4ff'
 }) => {
-  const particlesInit = useCallback(async (engine: Engine) => {
-    await loadSlim(engine);
-  }, []);
-
-  const particlesLoaded = useCallback(async (container: Container | undefined) => {
-    // Particle container loaded callback
-    console.log('Particles loaded:', container);
-  }, []);
-
   const getParticleConfig = () => {
     switch (type) {
       case 'celebration':
@@ -303,7 +292,9 @@ export const ParticleEffects: React.FC<ParticleEffectsProps> = ({
                 enable: true,
                 mode: "bubble"
               },
-              resize: true
+              resize: {
+                enable: true
+              }
             },
             modes: {
               repulse: {
@@ -330,8 +321,6 @@ export const ParticleEffects: React.FC<ParticleEffectsProps> = ({
   return (
     <Particles
       id={`tsparticles-${type}`}
-      init={particlesInit}
-      loaded={particlesLoaded}
       options={getParticleConfig()}
       style={{
         position: 'absolute',

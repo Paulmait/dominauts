@@ -1,0 +1,132 @@
+====================================================
+DOMINAUTS - SUPABASE SETUP INSTRUCTIONS
+====================================================
+
+FOLLOW THESE STEPS IN ORDER:
+
+====================================================
+STEP 1: DATABASE SETUP
+====================================================
+
+1. Open Supabase Dashboard: https://supabase.com/dashboard
+2. Select your project
+3. Go to SQL Editor (left sidebar)
+4. Click "New Query"
+5. Copy ALL content from: 01-DATABASE-SCHEMA.sql
+6. Paste into SQL Editor
+7. Click "Run" button
+8. Wait for "Success" message
+
+====================================================
+STEP 2: CREATE ADMIN USER
+====================================================
+
+1. Go to Authentication > Users
+2. Click "Add user"
+3. Enter admin email and password
+4. Click "Create user"
+5. Copy the User UUID that appears
+
+6. Go back to SQL Editor
+7. Click "New Query"
+8. Open: 02-CREATE-ADMIN-USER.sql
+9. Replace 'YOUR-USER-UUID-HERE' with the UUID you copied
+10. Replace email with your admin email
+11. Generate bcrypt hash:
+    - Go to: https://bcrypt.online/
+    - Enter your admin password
+    - Copy the generated hash
+12. Replace 'YOUR-BCRYPT-HASH-HERE' with the hash
+13. Click "Run"
+
+====================================================
+STEP 3: CREATE EDGE FUNCTIONS
+====================================================
+
+For each function (auth-register, auth-login, auth-admin, password-reset):
+
+1. Go to Edge Functions (left sidebar)
+2. Click "New Function"
+3. Enter function name exactly as shown:
+   - auth-register
+   - auth-login
+   - auth-admin
+   - password-reset
+
+4. Replace default code with content from:
+   - FUNCTION-auth-register.js
+   - FUNCTION-auth-login.js
+   - FUNCTION-auth-admin.js
+   - FUNCTION-password-reset.js
+
+5. Click "Deploy"
+
+====================================================
+STEP 4: SET ENVIRONMENT VARIABLES
+====================================================
+
+1. Go to Settings > Edge Functions
+2. Scroll to "Secrets" section
+3. Add these secrets:
+
+   Name: ADMIN_SECRET_KEY
+   Value: create-your-own-secret-key-min-32-chars
+
+   Name: RESEND_API_KEY
+   Value: re_xxxxxxxxxxxxx (optional, for emails)
+
+4. Click "Save"
+
+====================================================
+STEP 5: UPDATE CLIENT CODE
+====================================================
+
+1. Create .env.local file in project root
+2. Add these variables:
+
+VITE_SUPABASE_URL=https://YOUR-PROJECT-REF.supabase.co
+VITE_SUPABASE_ANON_KEY=your-anon-key
+
+3. Get these values from:
+   - Supabase Dashboard > Settings > API
+
+====================================================
+STEP 6: TEST FUNCTIONS
+====================================================
+
+Test Registration:
+curl -X POST https://YOUR-PROJECT-REF.supabase.co/functions/v1/auth-register \
+  -H "Content-Type: application/json" \
+  -H "apikey: YOUR-ANON-KEY" \
+  -d '{"email":"test@example.com","username":"testuser","password":"Test123!"}'
+
+Test Login:
+curl -X POST https://YOUR-PROJECT-REF.supabase.co/functions/v1/auth-login \
+  -H "Content-Type: application/json" \
+  -H "apikey: YOUR-ANON-KEY" \
+  -d '{"email":"test@example.com","password":"Test123!"}'
+
+====================================================
+TROUBLESHOOTING
+====================================================
+
+If functions don't work:
+- Check all secrets are set correctly
+- Verify database tables exist
+- Check function logs in Dashboard
+- Ensure Auth is enabled in Supabase
+
+Common Issues:
+- 500 error: Check database tables exist
+- 403 error: Check API key is correct
+- 401 error: Check credentials
+- CORS error: Include apikey header
+
+====================================================
+SUPPORT
+====================================================
+
+Check logs: Edge Functions > Select Function > Logs
+Database: Table Editor to view data
+SQL: SQL Editor for queries
+Auth: Authentication > Users for user management

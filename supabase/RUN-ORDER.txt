@@ -1,0 +1,142 @@
+====================================================
+DOMINAUTS - SQL SCRIPTS EXECUTION ORDER
+====================================================
+
+RUN THESE SQL SCRIPTS IN THIS EXACT ORDER:
+
+====================================================
+STEP-BY-STEP EXECUTION
+====================================================
+
+1. 01-DATABASE-SCHEMA.sql
+   - Creates all base tables
+   - Sets up indexes
+   - Must run FIRST
+
+2. 02-CREATE-ADMIN-USER.sql
+   - Creates your admin account
+   - Requires user created in Auth first
+   - Replace UUID and values before running
+
+3. 03-SECURITY-POLICIES.sql
+   - Sets up Row Level Security (RLS)
+   - Creates security policies
+   - Protects your data
+
+4. 04-STORAGE-BUCKETS.sql
+   - Creates storage buckets for files
+   - Sets up avatar storage
+   - Configures storage policies
+
+5. 05-REALTIME-TRIGGERS.sql
+   - Enables realtime subscriptions
+   - Creates chat system
+   - Sets up achievements
+
+6. 06-ADVANCED-FUNCTIONS.sql
+   - Creates game functions
+   - Sets up rewards system
+   - Implements anti-cheat
+
+====================================================
+HOW TO RUN EACH SCRIPT
+====================================================
+
+1. Open Supabase Dashboard
+2. Go to SQL Editor
+3. Click "New Query"
+4. Copy entire content of script
+5. Paste in editor
+6. Click "Run"
+7. Wait for success message
+8. Move to next script
+
+====================================================
+VERIFICATION AFTER EACH SCRIPT
+====================================================
+
+After 01-DATABASE-SCHEMA.sql:
+- Check: Table Editor > profiles table exists
+- Check: password_resets table exists
+
+After 02-CREATE-ADMIN-USER.sql:
+- Check: SELECT * FROM profiles WHERE role = 'admin';
+- Should return your admin user
+
+After 03-SECURITY-POLICIES.sql:
+- Check: All tables show "RLS enabled" in Table Editor
+- Test: Try to query profiles as anon user
+
+After 04-STORAGE-BUCKETS.sql:
+- Check: Storage > Buckets shows avatars, game-assets, replays
+- Test: Try uploading a test image
+
+After 05-REALTIME-TRIGGERS.sql:
+- Check: Database > Replication shows enabled tables
+- Check: achievements table has sample data
+
+After 06-ADVANCED-FUNCTIONS.sql:
+- Check: Database > Functions shows all custom functions
+- Test: SELECT claim_daily_reward('your-user-id');
+
+====================================================
+TROUBLESHOOTING
+====================================================
+
+If a script fails:
+
+1. Check error message carefully
+2. Common issues:
+   - Table already exists: Safe to ignore
+   - Permission denied: Check you're using service role
+   - Syntax error: Make sure you copied entire script
+
+3. To reset and start over:
+   - Drop all tables: DROP SCHEMA public CASCADE; CREATE SCHEMA public;
+   - Start from script 01 again
+
+====================================================
+AFTER ALL SCRIPTS COMPLETE
+====================================================
+
+1. Create Edge Functions (see FUNCTION files)
+2. Set environment variables
+3. Test authentication flow
+4. Run security checklist
+
+====================================================
+QUICK HEALTH CHECK
+====================================================
+
+Run this to verify setup:
+
+SELECT
+  'Tables' as check_type,
+  COUNT(*) as count
+FROM information_schema.tables
+WHERE table_schema = 'public'
+UNION ALL
+SELECT
+  'RLS Policies' as check_type,
+  COUNT(*) as count
+FROM pg_policies
+WHERE schemaname = 'public'
+UNION ALL
+SELECT
+  'Functions' as check_type,
+  COUNT(*) as count
+FROM pg_proc
+WHERE pronamespace = 'public'::regnamespace
+UNION ALL
+SELECT
+  'Storage Buckets' as check_type,
+  COUNT(*) as count
+FROM storage.buckets;
+
+Expected minimums:
+- Tables: 10+
+- RLS Policies: 15+
+- Functions: 10+
+- Storage Buckets: 3
+
+====================================================

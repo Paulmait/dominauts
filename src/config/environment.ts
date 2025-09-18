@@ -5,66 +5,66 @@
 
 export const ENV = {
   // Deployment
-  NODE_ENV: import.meta.env.MODE || 'development',
-  IS_PRODUCTION: import.meta.env.PROD,
-  IS_DEVELOPMENT: import.meta.env.DEV,
-  APP_URL: import.meta.env.VITE_APP_URL || 'http://localhost:3000',
-  APP_VERSION: import.meta.env.VITE_APP_VERSION || '2.0.0',
+  NODE_ENV: process.env.NODE_ENV || 'development',
+  IS_PRODUCTION: process.env.NODE_ENV === 'production',
+  IS_DEVELOPMENT: process.env.NODE_ENV === 'development',
+  APP_URL: process.env.VITE_APP_URL || 'http://localhost:3000',
+  APP_VERSION: process.env.VITE_APP_VERSION || '2.0.0',
 
   // Supabase (Primary Database)
   SUPABASE: {
-    URL: import.meta.env.VITE_SUPABASE_URL || '',
-    ANON_KEY: import.meta.env.VITE_SUPABASE_ANON_KEY || '',
-    enabled: !!import.meta.env.VITE_SUPABASE_URL
+    URL: process.env.VITE_SUPABASE_URL || '',
+    ANON_KEY: process.env.VITE_SUPABASE_ANON_KEY || '',
+    enabled: !!process.env.VITE_SUPABASE_URL
   },
 
   // Firebase (Optional - for specific features)
   FIREBASE: {
-    apiKey: import.meta.env.VITE_FIREBASE_API_KEY || '',
-    authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || '',
-    projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || '',
-    storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || '',
-    messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || '',
-    appId: import.meta.env.VITE_FIREBASE_APP_ID || '',
-    measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID || '',
-    enabled: !!import.meta.env.VITE_FIREBASE_API_KEY
+    apiKey: process.env.VITE_FIREBASE_API_KEY || '',
+    authDomain: process.env.VITE_FIREBASE_AUTH_DOMAIN || '',
+    projectId: process.env.VITE_FIREBASE_PROJECT_ID || '',
+    storageBucket: process.env.VITE_FIREBASE_STORAGE_BUCKET || '',
+    messagingSenderId: process.env.VITE_FIREBASE_MESSAGING_SENDER_ID || '',
+    appId: process.env.VITE_FIREBASE_APP_ID || '',
+    measurementId: process.env.VITE_FIREBASE_MEASUREMENT_ID || '',
+    enabled: !!process.env.VITE_FIREBASE_API_KEY
   },
 
   // Stripe
   STRIPE: {
-    publishableKey: import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY || '',
-    enabled: !!import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY
+    publishableKey: process.env.VITE_STRIPE_PUBLISHABLE_KEY || '',
+    enabled: !!process.env.VITE_STRIPE_PUBLISHABLE_KEY
   },
 
   // Analytics
   ANALYTICS: {
-    GA_ID: import.meta.env.VITE_GA_MEASUREMENT_ID || '',
-    SENTRY_DSN: import.meta.env.VITE_SENTRY_DSN || '',
-    MIXPANEL_TOKEN: import.meta.env.VITE_MIXPANEL_TOKEN || '',
-    enabled: import.meta.env.VITE_ENABLE_ANALYTICS === 'true'
+    GA_ID: process.env.VITE_GA_MEASUREMENT_ID || '',
+    SENTRY_DSN: process.env.VITE_SENTRY_DSN || '',
+    MIXPANEL_TOKEN: process.env.VITE_MIXPANEL_TOKEN || '',
+    enabled: process.env.VITE_ENABLE_ANALYTICS === 'true'
   },
 
   // Feature Flags
   FEATURES: {
-    multiplayer: import.meta.env.VITE_ENABLE_MULTIPLAYER === 'true',
-    tournaments: import.meta.env.VITE_ENABLE_TOURNAMENTS === 'true',
-    ads: import.meta.env.VITE_ENABLE_ADS === 'true',
-    iap: import.meta.env.VITE_ENABLE_IAP === 'true',
-    pushNotifications: import.meta.env.VITE_ENABLE_PUSH_NOTIFICATIONS === 'true',
-    ai: import.meta.env.VITE_ENABLE_AI !== 'false',
-    hints: import.meta.env.VITE_ENABLE_HINTS !== 'false'
+    multiplayer: process.env.VITE_ENABLE_MULTIPLAYER === 'true',
+    tournaments: process.env.VITE_ENABLE_TOURNAMENTS === 'true',
+    ads: process.env.VITE_ENABLE_ADS === 'true',
+    iap: process.env.VITE_ENABLE_IAP === 'true',
+    pushNotifications: process.env.VITE_ENABLE_PUSH_NOTIFICATIONS === 'true',
+    ai: process.env.VITE_ENABLE_AI !== 'false',
+    hints: process.env.VITE_ENABLE_HINTS !== 'false'
   },
 
   // Game Settings
   GAME: {
-    maxPlayers: parseInt(import.meta.env.VITE_MAX_PLAYERS || '4'),
-    defaultMode: import.meta.env.VITE_DEFAULT_GAME_MODE || 'allfives'
+    maxPlayers: parseInt(process.env.VITE_MAX_PLAYERS || '4'),
+    defaultMode: process.env.VITE_DEFAULT_GAME_MODE || 'allfives'
   },
 
   // API
   API: {
-    baseUrl: import.meta.env.VITE_API_BASE_URL || '/api',
-    websocketUrl: import.meta.env.VITE_WEBSOCKET_URL || 'ws://localhost:3001'
+    baseUrl: process.env.VITE_API_BASE_URL || '/api',
+    websocketUrl: process.env.VITE_WEBSOCKET_URL || 'ws://localhost:3001'
   }
 };
 

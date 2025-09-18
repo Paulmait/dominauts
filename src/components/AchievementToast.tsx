@@ -10,7 +10,7 @@ export const ACHIEVEMENTS = {
     description: 'You won your first game!',
     icon: '🏆',
     points: 100,
-    rarity: 'common'
+    rarity: 'common' as const
   },
   PERFECT_GAME: {
     id: 'perfect_game',
@@ -18,7 +18,7 @@ export const ACHIEVEMENTS = {
     description: 'Won without letting opponent score!',
     icon: '💎',
     points: 500,
-    rarity: 'epic'
+    rarity: 'epic' as const
   },
   DOMINO_MASTER: {
     id: 'domino_master',
@@ -26,7 +26,7 @@ export const ACHIEVEMENTS = {
     description: 'Won 10 games in a row!',
     icon: '👑',
     points: 1000,
-    rarity: 'legendary'
+    rarity: 'legendary' as const
   },
   SPEED_DEMON: {
     id: 'speed_demon',
@@ -34,7 +34,7 @@ export const ACHIEVEMENTS = {
     description: 'Won a game in under 2 minutes!',
     icon: '⚡',
     points: 250,
-    rarity: 'rare'
+    rarity: 'rare' as const
   },
   COMEBACK_KING: {
     id: 'comeback_king',
@@ -42,7 +42,7 @@ export const ACHIEVEMENTS = {
     description: 'Won after being down by 50+ points!',
     icon: '🔥',
     points: 300,
-    rarity: 'rare'
+    rarity: 'rare' as const
   },
   DOUBLE_TROUBLE: {
     id: 'double_trouble',
@@ -50,7 +50,7 @@ export const ACHIEVEMENTS = {
     description: 'Played 5 doubles in one game!',
     icon: '♊',
     points: 150,
-    rarity: 'common'
+    rarity: 'common' as const
   },
   STRATEGIST: {
     id: 'strategist',
@@ -58,7 +58,7 @@ export const ACHIEVEMENTS = {
     description: 'Blocked opponent 5 times in one game!',
     icon: '🧠',
     points: 200,
-    rarity: 'rare'
+    rarity: 'rare' as const
   },
   LUCKY_SEVEN: {
     id: 'lucky_seven',
@@ -66,7 +66,7 @@ export const ACHIEVEMENTS = {
     description: 'Won with exactly 77 points!',
     icon: '🎰',
     points: 777,
-    rarity: 'epic'
+    rarity: 'epic' as const
   },
   DAILY_PLAYER: {
     id: 'daily_player',
@@ -74,7 +74,7 @@ export const ACHIEVEMENTS = {
     description: 'Played 7 days in a row!',
     icon: '📅',
     points: 100,
-    rarity: 'common'
+    rarity: 'common' as const
   },
   HIGH_SCORER: {
     id: 'high_scorer',
@@ -82,7 +82,7 @@ export const ACHIEVEMENTS = {
     description: 'Scored over 150 points in one game!',
     icon: '📈',
     points: 350,
-    rarity: 'rare'
+    rarity: 'rare' as const
   }
 };
 

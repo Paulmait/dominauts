@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Supabase Connection - Dominauts</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #1a1a2e;
+            color: white;
+        }
+        .test-section {
+            background: #2a2a4e;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+        .success { color: #4CAF50; }
+        .error { color: #f44336; }
+        .pending { color: #FFC107; }
+        button {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            margin: 5px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover { background: #45a049; }
+        input {
+            padding: 8px;
+            margin: 5px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+            color: black;
+        }
+        .config-form {
+            background: #3a3a5e;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        pre {
+            background: #0a0a1e;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>🎲 Dominauts - Supabase Connection Test</h1>
+
+    <div class="config-form">
+        <h2>Step 1: Enter Your Supabase Credentials</h2>
+        <p>Get these from your Supabase project settings → API</p>
+        <div>
+            <label>Supabase URL:</label><br>
+            <input type="text" id="supabaseUrl" placeholder="https://xxx.supabase.co" style="width: 100%; max-width: 500px;">
+        </div>
+        <div>
+            <label>Anon Key:</label><br>
+            <input type="text" id="anonKey" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6..." style="width: 100%; max-width: 500px;">
+        </div>
+        <button onclick="saveConfig()">Save & Test Connection</button>
+    </div>
+
+    <div class="test-section">
+        <h2>Connection Tests</h2>
+        <div id="connectionStatus" class="pending">⏳ Not tested yet</div>
+    </div>
+
+    <div class="test-section">
+        <h2>Database Tests</h2>
+        <button onclick="testDatabase()">Test Database</button>
+        <div id="databaseStatus"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>Edge Functions Tests</h2>
+        <button onclick="testEdgeFunctions()">Test Edge Functions</button>
+        <div id="edgeFunctionStatus"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>Create Test User</h2>
+        <input type="email" id="testEmail" placeholder="test@example.com">
+        <input type="text" id="testUsername" placeholder="testuser">
+        <input type="password" id="testPassword" placeholder="password">
+        <button onclick="testRegistration()">Register Test User</button>
+        <div id="registrationStatus"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>Test Login</h2>
+        <input type="email" id="loginEmail" placeholder="test@example.com">
+        <input type="password" id="loginPassword" placeholder="password">
+        <button onclick="testLogin()">Test Login</button>
+        <div id="loginStatus"></div>
+    </div>
+
+    <script>
+        let supabaseUrl = localStorage.getItem('supabaseUrl') || '';
+        let anonKey = localStorage.getItem('anonKey') || '';
+
+        // Load saved config
+        document.getElementById('supabaseUrl').value = supabaseUrl;
+        document.getElementById('anonKey').value = anonKey;
+
+        function saveConfig() {
+            supabaseUrl = document.getElementById('supabaseUrl').value.trim();
+            anonKey = document.getElementById('anonKey').value.trim();
+
+            if (!supabaseUrl || !anonKey) {
+                alert('Please enter both Supabase URL and Anon Key');
+                return;
+            }
+
+            localStorage.setItem('supabaseUrl', supabaseUrl);
+            localStorage.setItem('anonKey', anonKey);
+
+            testConnection();
+        }
+
+        async function testConnection() {
+            const status = document.getElementById('connectionStatus');
+            status.className = 'pending';
+            status.innerHTML = '⏳ Testing connection...';
+
+            try {
+                const response = await fetch(`${supabaseUrl}/rest/v1/`, {
+                    headers: {
+                        'apikey': anonKey,
+                        'Authorization': `Bearer ${anonKey}`
+                    }
+                });
+
+                if (response.ok) {
+                    status.className = 'success';
+                    status.innerHTML = '✅ Connection successful!';
+                } else {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+            } catch (error) {
+                status.className = 'error';
+                status.innerHTML = `❌ Connection failed: ${error.message}`;
+            }
+        }
+
+        async function testDatabase() {
+            const status = document.getElementById('databaseStatus');
+            status.innerHTML = '<div class="pending">⏳ Testing database...</div>';
+
+            try {
+                // Test fetching profiles table
+                const response = await fetch(`${supabaseUrl}/rest/v1/profiles?select=count`, {
+                    headers: {
+                        'apikey': anonKey,
+                        'Authorization': `Bearer ${anonKey}`,
+                        'Prefer': 'count=exact'
+                    }
+                });
+
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+                const count = response.headers.get('content-range')?.split('/')[1] || '0';
+
+                status.innerHTML = `
+                    <div class="success">✅ Database connected!</div>
+                    <div>Tables found:</div>
+                    <ul>
+                        <li>profiles (${count} records)</li>
+                        <li>game_sessions</li>
+                        <li>transactions</li>
+                    </ul>
+                `;
+
+                // Test specific tables
+                await testTable('game_sessions');
+                await testTable('transactions');
+
+            } catch (error) {
+                status.innerHTML = `<div class="error">❌ Database test failed: ${error.message}</div>`;
+            }
+        }
+
+        async function testTable(tableName) {
+            try {
+                const response = await fetch(`${supabaseUrl}/rest/v1/${tableName}?limit=1`, {
+                    headers: {
+                        'apikey': anonKey,
+                        'Authorization': `Bearer ${anonKey}`
+                    }
+                });
+                console.log(`Table ${tableName}: ${response.ok ? 'OK' : 'Failed'}`);
+            } catch (error) {
+                console.error(`Table ${tableName} test failed:`, error);
+            }
+        }
+
+        async function testEdgeFunctions() {
+            const status = document.getElementById('edgeFunctionStatus');
+            status.innerHTML = '<div class="pending">⏳ Testing Edge Functions...</div>';
+
+            const functions = ['registration-function', 'User-login', 'Admin-authentication', 'Password-reset'];
+            let results = [];
+
+            for (const func of functions) {
+                try {
+                    // Send appropriate test data for each function
+                    let testData = {};
+                    if (func === 'registration-function') {
+                        testData = { email: 'test@test.com', username: 'test', password: 'test123' };
+                    } else if (func === 'User-login') {
+                        testData = { email: 'test@test.com', password: 'test123' };
+                    } else if (func === 'Admin-authentication') {
+                        testData = { email: 'admin@test.com', password: 'test123', adminCode: 'test' };
+                    } else if (func === 'Password-reset') {
+                        testData = { action: 'request', email: 'test@test.com' };
+                    }
+
+                    const response = await fetch(`${supabaseUrl}/functions/v1/${func}`, {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${anonKey}`,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(testData)
+                    });
+
+                    // Check if we get a proper response (200-299 or expected error)
+                    const isWorking = response.status < 500; // Not a server error
+                    results.push(`<li>${func}: ${isWorking ? '✅ Deployed & Responding' : `❌ Error ${response.status}`}</li>`);
+                } catch (error) {
+                    results.push(`<li>${func}: ❌ Not deployed</li>`);
+                }
+            }
+
+            status.innerHTML = `
+                <div>Edge Functions Status:</div>
+                <ul>${results.join('')}</ul>
+                <div class="pending">Note: Deploy Edge Functions if showing "Not deployed"</div>
+            `;
+        }
+
+        async function testRegistration() {
+            const status = document.getElementById('registrationStatus');
+            const email = document.getElementById('testEmail').value;
+            const username = document.getElementById('testUsername').value;
+            const password = document.getElementById('testPassword').value;
+
+            if (!email || !username || !password) {
+                status.innerHTML = '<div class="error">Please fill all fields</div>';
+                return;
+            }
+
+            status.innerHTML = '<div class="pending">⏳ Registering...</div>';
+
+            try {
+                const response = await fetch(`${supabaseUrl}/functions/v1/registration-function`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${anonKey}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ email, username, password })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    status.innerHTML = `<div class="success">✅ Registration successful!</div><pre>${JSON.stringify(data, null, 2)}</pre>`;
+                } else {
+                    status.innerHTML = `<div class="error">❌ Registration failed: ${data.error || data.message}</div>`;
+                }
+            } catch (error) {
+                status.innerHTML = `<div class="error">❌ Registration error: ${error.message}</div>`;
+            }
+        }
+
+        async function testLogin() {
+            const status = document.getElementById('loginStatus');
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+
+            if (!email || !password) {
+                status.innerHTML = '<div class="error">Please fill all fields</div>';
+                return;
+            }
+
+            status.innerHTML = '<div class="pending">⏳ Logging in...</div>';
+
+            try {
+                const response = await fetch(`${supabaseUrl}/functions/v1/User-login`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${anonKey}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    status.innerHTML = `<div class="success">✅ Login successful!</div><pre>${JSON.stringify(data, null, 2)}</pre>`;
+                } else {
+                    status.innerHTML = `<div class="error">❌ Login failed: ${data.error || data.message}</div>`;
+                }
+            } catch (error) {
+                status.innerHTML = `<div class="error">❌ Login error: ${error.message}</div>`;
+            }
+        }
+
+        // Auto-test if credentials exist
+        if (supabaseUrl && anonKey) {
+            testConnection();
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,74 @@
+===========================================
+SUPABASE EDGE FUNCTION ENVIRONMENT VARIABLES
+===========================================
+
+COPY THESE TO: Supabase Dashboard > Settings > Edge Functions > Secrets
+
+-------------------------------------------
+REQUIRED VARIABLES (Add these secrets):
+-------------------------------------------
+
+ADMIN_SECRET_KEY = generate-a-super-secret-admin-key-minimum-32-chars
+(Example: DOMINO-MASTER-2025-SECRET-KEY-XYZ789)
+
+RESEND_API_KEY = re_xxxxxxxxxxxxx
+(Get from https://resend.com - Optional for email)
+
+
+-------------------------------------------
+AUTOMATIC VARIABLES (Already set by Supabase):
+-------------------------------------------
+
+These are automatically available, DO NOT add them:
+- SUPABASE_URL
+- SUPABASE_SERVICE_ROLE_KEY
+- SUPABASE_ANON_KEY
+
+
+-------------------------------------------
+CLIENT-SIDE VARIABLES (.env.local file):
+-------------------------------------------
+
+Create .env.local file in your project root with:
+
+VITE_SUPABASE_URL=https://YOUR-PROJECT-REF.supabase.co
+VITE_SUPABASE_ANON_KEY=your-anon-key-from-supabase-dashboard
+
+
+-------------------------------------------
+HOW TO ADD SECRETS IN SUPABASE:
+-------------------------------------------
+
+1. Go to: https://supabase.com/dashboard
+2. Select your project
+3. Navigate to: Settings (gear icon)
+4. Click on: Edge Functions
+5. Scroll to: Secrets section
+6. Click: Add new secret
+7. Enter name: ADMIN_SECRET_KEY
+8. Enter value: your-secret-value
+9. Click: Save
+10. Repeat for RESEND_API_KEY if using email
+
+
+-------------------------------------------
+TESTING YOUR CONFIGURATION:
+-------------------------------------------
+
+After setting secrets, test with:
+
+curl -X POST https://YOUR-PROJECT-REF.supabase.co/functions/v1/auth-login \
+  -H "Content-Type: application/json" \
+  -H "apikey: YOUR-ANON-KEY" \
+  -d '{"email":"test@example.com","password":"Test123!"}'
+
+
+-------------------------------------------
+PRODUCTION CHECKLIST:
+-------------------------------------------
+
+[ ] Set strong ADMIN_SECRET_KEY (32+ chars)
+[ ] Remove debug_code from password-reset function
+[ ] Configure RESEND_API_KEY for emails
+[ ] Update CORS origins if needed
+[ ] Test all functions work correctly

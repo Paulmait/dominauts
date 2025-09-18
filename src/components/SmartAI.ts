@@ -3,7 +3,7 @@
  * Advanced AI strategies for different game modes
  */
 
-import { DominoTile, PlacedTile, Player, GameMode, PlayerType, Move } from '../types';
+import { DominoTile, PlacedTile, Player, GameMode, PlayerType, Move, MoveType } from '../types';
 
 interface AIStrategy {
   evaluateMove(tile: DominoTile, board: PlacedTile[], hand: DominoTile[]): number;
@@ -421,7 +421,7 @@ class DefaultStrategy implements AIStrategy {
 }
 
 // Export statement for SmartAI class
-export { SmartAI };
+// Export already declared above
 
 // Additional helper methods for SmartAI
 Object.assign(SmartAI.prototype, {

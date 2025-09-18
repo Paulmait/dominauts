@@ -7,8 +7,8 @@ import { ENV } from '../config/environment';
 
 // Initialize Supabase client
 export const supabase = createClient(
-  ENV.SUPABASE.url,
-  ENV.SUPABASE.anonKey,
+  ENV.SUPABASE.URL,
+  ENV.SUPABASE.ANON_KEY,
   {
     auth: {
       persistSession: true,

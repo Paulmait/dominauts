@@ -1,0 +1,219 @@
+====================================================
+DOMINAUTS - PRODUCTION SECURITY CHECKLIST
+====================================================
+
+CHECK EACH ITEM BEFORE GOING LIVE:
+
+====================================================
+DATABASE SECURITY
+====================================================
+
+[ ] Row Level Security (RLS) enabled on ALL tables
+[ ] RLS policies tested and working correctly
+[ ] Service role key NOT exposed in client code
+[ ] Anon key only used in client-side code
+[ ] No sensitive data in public tables
+[ ] Database backups configured (automatic in Supabase)
+
+====================================================
+AUTHENTICATION & AUTHORIZATION
+====================================================
+
+[ ] Admin secret key is strong (32+ characters)
+[ ] Admin secret key stored in Edge Function secrets
+[ ] Password requirements enforced (8+ chars, upper/lower/numbers)
+[ ] Bcrypt salt rounds set to 10-12
+[ ] Email verification enabled for new users
+[ ] Password reset tokens expire after 1 hour
+[ ] Login attempts tracked and logged
+
+====================================================
+EDGE FUNCTIONS SECURITY
+====================================================
+
+[ ] Remove debug_code from password-reset function
+[ ] CORS headers properly configured
+[ ] Rate limiting enabled (built-in with Supabase)
+[ ] Input validation on all endpoints
+[ ] SQL injection prevention (using parameterized queries)
+[ ] Proper error handling (no stack traces to client)
+
+====================================================
+STORAGE SECURITY
+====================================================
+
+[ ] Storage buckets have proper policies
+[ ] File size limits configured
+[ ] Allowed MIME types restricted
+[ ] User can only access own files
+[ ] Admin-only access for game assets
+
+====================================================
+CLIENT-SIDE SECURITY
+====================================================
+
+[ ] Environment variables in .env.local (not committed)
+[ ] No hardcoded API keys or secrets
+[ ] HTTPS enforced in production
+[ ] Content Security Policy headers configured
+[ ] XSS protection enabled
+
+====================================================
+API SECURITY
+====================================================
+
+[ ] API key required for all Edge Function calls
+[ ] Rate limiting configured
+[ ] Request size limits set
+[ ] Timeout settings appropriate
+[ ] Error messages don't leak sensitive info
+
+====================================================
+MONITORING & LOGGING
+====================================================
+
+[ ] Admin activity logs enabled
+[ ] Failed login attempts tracked
+[ ] Suspicious activity alerts configured
+[ ] Error tracking enabled (Sentry recommended)
+[ ] Performance monitoring active
+
+====================================================
+DATA PROTECTION
+====================================================
+
+[ ] Personal data encrypted at rest
+[ ] GDPR compliance if serving EU users
+[ ] Privacy policy updated and visible
+[ ] Terms of service updated and visible
+[ ] Cookie consent implemented if needed
+[ ] Data retention policies defined
+
+====================================================
+PAYMENT SECURITY (If Using Stripe)
+====================================================
+
+[ ] Stripe webhook endpoints secured
+[ ] Webhook signatures validated
+[ ] PCI compliance maintained
+[ ] Test mode disabled in production
+[ ] Refund policies implemented
+
+====================================================
+ANTI-CHEAT & FAIR PLAY
+====================================================
+
+[ ] Score validation implemented
+[ ] Game duration checks active
+[ ] Suspicious activity logging enabled
+[ ] Rate limiting on game actions
+[ ] Server-side game state validation
+
+====================================================
+BACKUP & RECOVERY
+====================================================
+
+[ ] Database backups configured
+[ ] Point-in-time recovery enabled
+[ ] Disaster recovery plan documented
+[ ] Data export functionality tested
+[ ] Backup restoration tested
+
+====================================================
+DEPLOYMENT SECURITY
+====================================================
+
+[ ] Production branch protected
+[ ] CI/CD pipeline secured
+[ ] Deployment keys rotated regularly
+[ ] Infrastructure as Code (if applicable)
+[ ] SSL certificates valid and auto-renewing
+
+====================================================
+ENVIRONMENT VARIABLES TO SET
+====================================================
+
+Production (.env.local):
+------------------------
+VITE_SUPABASE_URL=https://xxx.supabase.co
+VITE_SUPABASE_ANON_KEY=xxx
+
+Edge Function Secrets:
+----------------------
+ADMIN_SECRET_KEY=xxx (32+ chars)
+RESEND_API_KEY=re_xxx (if using email)
+
+====================================================
+TESTING CHECKLIST
+====================================================
+
+[ ] Registration flow tested
+[ ] Login flow tested
+[ ] Password reset tested
+[ ] Admin login tested
+[ ] Game creation tested
+[ ] Multiplayer tested
+[ ] Payment flow tested (if applicable)
+[ ] Mobile devices tested
+[ ] Different browsers tested
+[ ] Offline mode tested
+
+====================================================
+GO-LIVE CHECKLIST
+====================================================
+
+1. [ ] All security checks above completed
+2. [ ] Remove all console.log statements
+3. [ ] Remove debug code from Edge Functions
+4. [ ] Enable production mode in Supabase
+5. [ ] Configure custom domain (optional)
+6. [ ] Set up monitoring alerts
+7. [ ] Document admin procedures
+8. [ ] Create admin user guide
+9. [ ] Set up customer support channel
+10. [ ] Launch! 🚀
+
+====================================================
+POST-LAUNCH MONITORING
+====================================================
+
+First 24 Hours:
+[ ] Monitor error logs
+[ ] Check performance metrics
+[ ] Review user registrations
+[ ] Monitor database queries
+[ ] Check payment processing (if applicable)
+
+First Week:
+[ ] Review security logs
+[ ] Analyze user behavior
+[ ] Check for unusual patterns
+[ ] Review customer feedback
+[ ] Performance optimization if needed
+
+====================================================
+EMERGENCY CONTACTS
+====================================================
+
+Document these for your team:
+- Supabase Support: support.supabase.com
+- Status Page: status.supabase.com
+- Your on-call developer: ___________
+- Database admin: ___________
+- Security contact: ___________
+
+====================================================
+NOTES
+====================================================
+
+Remember:
+- Security is ongoing, not one-time
+- Regular security audits recommended
+- Keep dependencies updated
+- Monitor for suspicious activity
+- Have an incident response plan
+
+====================================================
+Version: 1.0.0
+Last Updated: September 2025
+====================================================

@@ -170,7 +170,7 @@ export class LocationBasedFeatures {
   /**
    * Smart matchmaking based on location AND skill
    */
-  public async findMatch(preferences: MatchPreferences): Promise<Player | null> {
+  public async findMatch(preferences: MatchPreferences): Promise<NearbyPlayer | null> {
     const candidates = this.nearbyPlayers.filter(p => {
       if (!p.isOnline || !p.canChallenge) return false;
 

@@ -2,13 +2,63 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Dominauts™ - The Ultimate Domino Experience</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
+  <title>Dominauts™ - The Ultimate Strategic Domino Game</title>
+
+  <!-- Essential Meta Tags -->
+  <meta name="description" content="Dominauts™ - Experience the ultimate strategic domino game with real-time multiplayer, AI opponents, multiple game modes, and stunning visuals. Play Block, All Fives, Cuban, and Chicken Foot dominoes!">
+  <meta name="keywords" content="dominoes, domino game, multiplayer, strategy game, board game, online game, PWA, Dominauts">
+  <meta name="author" content="Dominauts Team">
+
+  <!-- Mobile & PWA Meta Tags -->
+  <meta name="theme-color" content="#00d4ff">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Dominauts">
+  <meta name="application-name" content="Dominauts">
+  <meta name="format-detection" content="telephone=no">
+  <meta name="HandheldFriendly" content="true">
+
+  <!-- Icons & Manifest -->
+  <link rel="manifest" href="/manifest.json">
+  <link rel="icon" type="image/x-icon" href="/assets/icons/favicon.ico">
+  <link rel="icon" type="image/png" sizes="16x16" href="/assets/icons/icon-16x16.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/icons/icon-32x32.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/icons/icon-180x180.png">
+  <link rel="apple-touch-icon" sizes="192x192" href="/assets/icons/icon-192x192.png">
+  <link rel="mask-icon" href="/assets/icons/safari-pinned-tab.svg" color="#00d4ff">
+
+  <!-- Open Graph / Social Media -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Dominauts™ - The Ultimate Strategic Domino Game">
+  <meta property="og:description" content="Experience the ultimate strategic domino game with real-time multiplayer, AI opponents, and stunning visuals!">
+  <meta property="og:image" content="/assets/dominauts-logo.png">
+  <meta property="og:url" content="https://dominauts.vercel.app">
+  <meta property="og:site_name" content="Dominauts">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Dominauts™ - The Ultimate Strategic Domino Game">
+  <meta name="twitter:description" content="Experience the ultimate strategic domino game with real-time multiplayer!">
+  <meta name="twitter:image" content="/assets/dominauts-logo.png">
+
+  <!-- Preconnect to External Resources -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://js.stripe.com">
+
+  <!-- DNS Prefetch -->
+  <link rel="dns-prefetch" href="https://fonts.googleapis.com">
+  <link rel="dns-prefetch" href="https://js.stripe.com">
+
+  <!-- Critical CSS (inline for fastest initial paint) -->
   <style>
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
     }
 
     body {
@@ -17,19 +67,80 @@
       min-height: 100vh;
       overflow: hidden;
       position: relative;
+      touch-action: manipulation;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
     }
 
     #app {
       width: 100%;
       height: 100vh;
+      height: 100dvh;
       display: flex;
       flex-direction: column;
+      position: relative;
+    }
+
+    .splash-screen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 10000;
+      transition: opacity 0.5s ease-out;
+    }
+
+    .splash-logo {
+      width: 150px;
+      height: 150px;
+      margin-bottom: 2rem;
+      animation: pulse 2s infinite;
+    }
+
+    .splash-text {
+      color: white;
+      font-size: 2rem;
+      font-weight: bold;
+      margin-bottom: 1rem;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+
+    .splash-loading {
+      width: 200px;
+      height: 4px;
+      background: rgba(255,255,255,0.2);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+
+    .splash-loading-bar {
+      height: 100%;
+      background: white;
+      border-radius: 2px;
+      animation: loading 2s ease-out forwards;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+    }
+
+    @keyframes loading {
+      0% { width: 0%; }
+      100% { width: 100%; }
     }
 
     .header {
       background: rgba(0, 0, 0, 0.2);
       backdrop-filter: blur(10px);
-      padding: 1rem;
+      -webkit-backdrop-filter: blur(10px);
+      padding: env(safe-area-inset-top, 1rem) 1rem 1rem 1rem;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -38,7 +149,7 @@
     }
 
     .header h1 {
-      font-size: 1.5rem;
+      font-size: clamp(1.2rem, 4vw, 1.5rem);
       font-weight: 600;
     }
 
@@ -65,9 +176,12 @@
       transition: all 0.3s ease;
       font-size: 0.9rem;
       font-weight: 500;
+      touch-action: manipulation;
+      user-select: none;
+      -webkit-user-select: none;
     }
 
-    .btn:hover {
+    .btn:hover, .btn:active {
       background: rgba(255, 255, 255, 0.3);
       transform: translateY(-2px);
     }
@@ -81,12 +195,14 @@
       flex: 1;
       position: relative;
       overflow: hidden;
+      touch-action: none;
     }
 
     .game-canvas {
       width: 100%;
       height: 100%;
       cursor: grab;
+      touch-action: none;
     }
 
     .game-canvas:active {
@@ -101,6 +217,7 @@
       bottom: 0;
       background: rgba(0, 0, 0, 0.8);
       backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -108,6 +225,7 @@
       opacity: 0;
       pointer-events: none;
       transition: opacity 0.3s ease;
+      padding: env(safe-area-inset-top, 1rem) env(safe-area-inset-right, 1rem) env(safe-area-inset-bottom, 1rem) env(safe-area-inset-left, 1rem);
     }
 
     .menu-overlay.active {
@@ -132,7 +250,7 @@
     }
 
     .menu-header {
-      font-size: 1.8rem;
+      font-size: clamp(1.5rem, 5vw, 1.8rem);
       margin-bottom: 1.5rem;
       color: #333;
       text-align: center;
@@ -151,9 +269,10 @@
       cursor: pointer;
       transition: all 0.3s ease;
       background: white;
+      touch-action: manipulation;
     }
 
-    .game-mode-card:hover {
+    .game-mode-card:hover, .game-mode-card:active {
       border-color: #667eea;
       background: #f8f9ff;
       transform: translateX(5px);
@@ -165,7 +284,7 @@
     }
 
     .game-mode-title {
-      font-size: 1.2rem;
+      font-size: clamp(1rem, 3vw, 1.2rem);
       font-weight: 600;
       margin-bottom: 0.5rem;
       color: #333;
@@ -179,11 +298,12 @@
 
     .player-info {
       position: absolute;
-      bottom: 1rem;
+      bottom: env(safe-area-inset-bottom, 1rem);
       left: 50%;
       transform: translateX(-50%);
       background: rgba(0, 0, 0, 0.7);
       backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
       padding: 1rem 2rem;
       border-radius: 30px;
       color: white;
@@ -217,7 +337,7 @@
 
     .toast {
       position: fixed;
-      bottom: 2rem;
+      bottom: calc(env(safe-area-inset-bottom, 2rem) + 2rem);
       right: 2rem;
       background: rgba(0, 0, 0, 0.9);
       color: white;
@@ -256,7 +376,7 @@
     }
 
     .modal-title {
-      font-size: 1.5rem;
+      font-size: clamp(1.2rem, 4vw, 1.5rem);
       margin-bottom: 1rem;
       color: #333;
     }
@@ -271,6 +391,7 @@
       display: flex;
       gap: 1rem;
       justify-content: flex-end;
+      flex-wrap: wrap;
     }
 
     .loading-spinner {
@@ -296,6 +417,7 @@
       to { transform: translate(-50%, -50%) rotate(360deg); }
     }
 
+    /* Mobile Optimizations */
     @media (max-width: 768px) {
       .header h1 {
         font-size: 1.2rem;
@@ -313,27 +435,223 @@
       .menu-content {
         padding: 1.5rem;
       }
+
+      .score-display {
+        padding: 0.4rem 0.8rem;
+        font-size: 0.85rem;
+      }
+
+      .player-info {
+        padding: 0.8rem 1.5rem;
+      }
+    }
+
+    /* Landscape Mobile */
+    @media (max-height: 500px) and (orientation: landscape) {
+      .header {
+        padding: 0.5rem 1rem;
+      }
+
+      .header h1 {
+        font-size: 1rem;
+      }
+
+      .menu-content {
+        max-height: 90vh;
+        padding: 1rem;
+      }
+
+      .game-modes {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    /* Reduced Motion */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+
+    /* Dark Mode Support */
+    @media (prefers-color-scheme: dark) {
+      .menu-content, .modal {
+        background: #2a2a2a;
+        color: #e0e0e0;
+      }
+
+      .menu-header, .modal-title {
+        color: #e0e0e0;
+      }
+
+      .game-mode-card {
+        background: #333;
+        border-color: #444;
+        color: #e0e0e0;
+      }
+
+      .game-mode-card:hover {
+        background: #3a3a3a;
+      }
+
+      .game-mode-title {
+        color: #e0e0e0;
+      }
+
+      .game-mode-desc, .modal-body {
+        color: #aaa;
+      }
+    }
+
+    /* Accessibility */
+    @media (prefers-contrast: high) {
+      .btn {
+        border-width: 2px;
+      }
+
+      .game-mode-card {
+        border-width: 3px;
+      }
+    }
+
+    /* Print Styles */
+    @media print {
+      body {
+        background: white;
+      }
+
+      .header-controls, .player-info, .menu-overlay, .modal, .toast, .loading-spinner {
+        display: none !important;
+      }
     }
   </style>
+
+  <!-- Preload Critical Assets -->
+  <link rel="preload" href="/assets/dominauts-logo.png" as="image">
+  <link rel="preload" href="/manifest.json" as="fetch" crossorigin>
+
+  <!-- Service Worker Registration -->
+  <script>
+    // Check for browser support
+    if ('serviceWorker' in navigator && 'caches' in window) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js')
+          .then(registration => {
+            console.log('SW registered:', registration);
+            // Check for updates
+            registration.addEventListener('updatefound', () => {
+              const newWorker = registration.installing;
+              newWorker.addEventListener('statechange', () => {
+                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                  // New service worker available
+                  if (confirm('New version available! Reload to update?')) {
+                    window.location.reload();
+                  }
+                }
+              });
+            });
+          })
+          .catch(error => console.log('SW registration failed:', error));
+      });
+    }
+
+    // PWA Install Prompt
+    let deferredPrompt;
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      // Show install button if needed
+      const installBtn = document.getElementById('install-btn');
+      if (installBtn) {
+        installBtn.style.display = 'block';
+        installBtn.addEventListener('click', () => {
+          deferredPrompt.prompt();
+          deferredPrompt.userChoice.then((result) => {
+            console.log('User response:', result);
+            deferredPrompt = null;
+          });
+        });
+      }
+    });
+
+    // Handle app installed
+    window.addEventListener('appinstalled', (evt) => {
+      console.log('App installed');
+    });
+
+    // Splash Screen
+    window.addEventListener('DOMContentLoaded', () => {
+      const splash = document.getElementById('splash-screen');
+      if (splash) {
+        setTimeout(() => {
+          splash.style.opacity = '0';
+          setTimeout(() => {
+            splash.style.display = 'none';
+          }, 500);
+        }, 2000);
+      }
+    });
+
+    // Prevent zoom on double-tap for iOS
+    let lastTouchEnd = 0;
+    document.addEventListener('touchend', (event) => {
+      const now = Date.now();
+      if (now - lastTouchEnd <= 300) {
+        event.preventDefault();
+      }
+      lastTouchEnd = now;
+    }, false);
+
+    // Handle offline/online status
+    window.addEventListener('online', () => {
+      const toast = document.getElementById('toast');
+      if (toast) {
+        toast.textContent = 'Back online!';
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 3000);
+      }
+    });
+
+    window.addEventListener('offline', () => {
+      const toast = document.getElementById('toast');
+      if (toast) {
+        toast.textContent = 'You are offline. Some features may be limited.';
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 5000);
+      }
+    });
+  </script>
 </head>
 <body>
+  <!-- Splash Screen -->
+  <div class="splash-screen" id="splash-screen">
+    <img src="/assets/dominauts-logo.png" alt="Dominauts" class="splash-logo">
+    <div class="splash-text">Dominauts™</div>
+    <div class="splash-loading">
+      <div class="splash-loading-bar"></div>
+    </div>
+  </div>
+
   <div id="app">
     <div class="header">
       <div style="display: flex; align-items: center; gap: 0.5rem;">
-        <img src="assets/dominauts-logo.png" alt="Dominauts™" style="height: 40px;">
+        <img src="/assets/dominauts-logo.png" alt="Dominauts™" style="height: 40px;" loading="lazy">
         <h1>Dominauts™</h1>
       </div>
       <div class="header-controls">
         <div class="score-display">Score: <span id="score">0</span></div>
         <div class="score-display">Round: <span id="round">1</span></div>
-        <button class="btn" id="pause-btn">⏸ Pause</button>
-        <button class="btn" id="menu-btn">☰ Menu</button>
+        <button class="btn" id="pause-btn" aria-label="Pause Game">⏸ Pause</button>
+        <button class="btn" id="menu-btn" aria-label="Open Menu">☰ Menu</button>
+        <button class="btn" id="install-btn" style="display:none;" aria-label="Install App">📲 Install</button>
       </div>
     </div>
 
-    <div class="game-container" id="game-container"></div>
+    <div class="game-container" id="game-container" role="main" aria-label="Game Board"></div>
 
-    <div class="player-info">
+    <div class="player-info" role="status" aria-live="polite">
       <div class="player-avatar">
         <span id="player-initial">P</span>
       </div>
@@ -346,27 +664,27 @@
       </div>
     </div>
 
-    <div class="menu-overlay" id="menu-overlay">
+    <div class="menu-overlay" id="menu-overlay" role="dialog" aria-labelledby="menu-header" aria-hidden="true">
       <div class="menu-content">
-        <h2 class="menu-header">Game Menu</h2>
-        
-        <div class="game-modes" id="game-modes">
-          <div class="game-mode-card" data-mode="allfives">
+        <h2 class="menu-header" id="menu-header">Game Menu</h2>
+
+        <div class="game-modes" id="game-modes" role="radiogroup" aria-label="Select Game Mode">
+          <div class="game-mode-card" data-mode="allfives" role="radio" aria-checked="false" tabindex="0">
             <div class="game-mode-title">🇺🇸 All Fives (Muggins)</div>
             <div class="game-mode-desc">Score points when the sum of open ends equals a multiple of 5</div>
           </div>
-          
-          <div class="game-mode-card" data-mode="block">
+
+          <div class="game-mode-card" data-mode="block" role="radio" aria-checked="false" tabindex="0">
             <div class="game-mode-title">🟦 Block Dominoes</div>
             <div class="game-mode-desc">Classic dominoes - no drawing, pass if you cannot play</div>
           </div>
-          
-          <div class="game-mode-card" data-mode="cuban">
+
+          <div class="game-mode-card" data-mode="cuban" role="radio" aria-checked="false" tabindex="0">
             <div class="game-mode-title">🇨🇺 Cuban Dominoes</div>
             <div class="game-mode-desc">Team-based block dominoes with double-nine set</div>
           </div>
-          
-          <div class="game-mode-card" data-mode="chicken">
+
+          <div class="game-mode-card" data-mode="chicken" role="radio" aria-checked="false" tabindex="0">
             <div class="game-mode-title">🇲🇽 Chicken Foot</div>
             <div class="game-mode-desc">Must play three tiles on doubles to form a "chicken foot"</div>
           </div>
@@ -380,7 +698,7 @@
       </div>
     </div>
 
-    <div class="modal" id="game-modal">
+    <div class="modal" id="game-modal" role="dialog" aria-labelledby="modal-title" aria-hidden="true">
       <h3 class="modal-title" id="modal-title">Round Complete</h3>
       <div class="modal-body" id="modal-body">
         Player 1 wins this round!
@@ -391,8 +709,20 @@
       </div>
     </div>
 
-    <div class="toast" id="toast"></div>
-    <div class="loading-spinner" id="loading"></div>
+    <div class="toast" id="toast" role="alert" aria-live="assertive"></div>
+    <div class="loading-spinner" id="loading" role="status" aria-label="Loading"></div>
   </div>
+
+  <!-- No JavaScript Fallback -->
+  <noscript>
+    <style>
+      .splash-screen { display: none !important; }
+      #app { display: none; }
+    </style>
+    <div style="padding: 2rem; text-align: center; color: white;">
+      <h1>JavaScript Required</h1>
+      <p>Please enable JavaScript to play Dominauts™</p>
+    </div>
+  </noscript>
 </body>
 </html>

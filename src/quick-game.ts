@@ -82,7 +82,7 @@ export class QuickGame {
     }
 
     // Clean up old controls
-    const oldControls = document.querySelector('.controls');
+    const oldControls = document.querySelector('.controls') as HTMLElement;
     if (oldControls) {
       oldControls.style.display = 'flex';
     }
@@ -137,6 +137,7 @@ export class QuickGame {
 
     // Create game configuration
     const config = {
+      mode: this.currentMode,
       playerCount: 2,
       playerNames: ['You', 'AI Player'],
       aiDifficulty: 'medium' as const,
@@ -242,9 +243,12 @@ export class QuickGame {
               setTimeout(() => {
                 const state = this.gameEngine?.getState();
                 if (this.gameEngine && state && !state.isGameOver) {
-                  // Simple AI move - just play first valid tile
-                  this.gameEngine.nextTurn();
-                  this.updateDisplay();
+                  // Trigger next turn through public method
+                  const currentPlayer = this.gameEngine.getCurrentPlayer();
+                  if (currentPlayer?.isAI) {
+                    // Let the game engine handle AI moves internally
+                    this.updateDisplay();
+                  }
                 }
               }, 1000);
             }

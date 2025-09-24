@@ -1240,6 +1240,162 @@ export class AwesomeDominoGame {
     ctx.restore();
   }
 
+  private drawTableSurface(): void {
+    const ctx = this.ctx;
+    const width = window.innerWidth;
+    const height = window.innerHeight;
+
+    // Draw realistic table surface
+    ctx.save();
+
+    // Table surface gradient (green felt)
+    const tableGradient = ctx.createRadialGradient(
+      width / 2, height / 2, 100,
+      width / 2, height / 2, Math.max(width, height) * 0.8
+    );
+
+    if (this.gameMode === 'classic' || this.gameMode === 'block') {
+      // Classic green felt
+      tableGradient.addColorStop(0, '#1e5128');
+      tableGradient.addColorStop(0.5, '#1b4721');
+      tableGradient.addColorStop(1, '#0d2818');
+    } else if (this.gameMode === 'partner' || this.gameMode === 'sixlove') {
+      // Team mode - blue felt
+      tableGradient.addColorStop(0, '#1e3a5f');
+      tableGradient.addColorStop(0.5, '#16304f');
+      tableGradient.addColorStop(1, '#0a1929');
+    } else if (this.gameMode === 'cutthroat') {
+      // Cutthroat - red felt
+      tableGradient.addColorStop(0, '#5c1e1e');
+      tableGradient.addColorStop(0.5, '#4a1616');
+      tableGradient.addColorStop(1, '#2d0d0d');
+    } else {
+      // Other modes - purple felt
+      tableGradient.addColorStop(0, '#3d1e5c');
+      tableGradient.addColorStop(0.5, '#2d164a');
+      tableGradient.addColorStop(1, '#1a0d2d');
+    }
+
+    // Draw main table area with perspective
+    ctx.fillStyle = tableGradient;
+    ctx.beginPath();
+    ctx.moveTo(width * 0.1, height * 0.3);
+    ctx.lineTo(width * 0.9, height * 0.3);
+    ctx.lineTo(width * 0.85, height * 0.85);
+    ctx.lineTo(width * 0.15, height * 0.85);
+    ctx.closePath();
+    ctx.fill();
+
+    // Table edge (wood border)
+    ctx.strokeStyle = '#4a2511';
+    ctx.lineWidth = 8;
+    ctx.stroke();
+
+    // Add table texture
+    ctx.globalAlpha = 0.1;
+    for (let i = 0; i < 50; i++) {
+      const x = Math.random() * width;
+      const y = height * 0.3 + Math.random() * (height * 0.55);
+      ctx.beginPath();
+      ctx.arc(x, y, Math.random() * 2, 0, Math.PI * 2);
+      ctx.fillStyle = '#ffffff';
+      ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+
+    // Draw mode-specific layout guides
+    this.drawModeSpecificLayout(ctx);
+
+    // Add player positions for multiplayer modes
+    if (this.gameMode === 'partner' || this.gameMode === 'cutthroat' || this.gameMode === 'sixlove') {
+      this.drawPlayerPositions(ctx);
+    }
+
+    ctx.restore();
+  }
+
+  private drawModeSpecificLayout(ctx: CanvasRenderingContext2D): void {
+    const width = window.innerWidth;
+    const height = window.innerHeight;
+    const centerX = width / 2;
+    const centerY = height / 2;
+
+    ctx.save();
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
+    ctx.lineWidth = 2;
+    ctx.setLineDash([5, 5]);
+
+    switch (this.gameMode) {
+      case 'cross':
+        // Draw cross layout guides
+        ctx.beginPath();
+        ctx.moveTo(centerX, centerY - 150);
+        ctx.lineTo(centerX, centerY + 150);
+        ctx.moveTo(centerX - 200, centerY);
+        ctx.lineTo(centerX + 200, centerY);
+        ctx.stroke();
+
+        // Center circle for spinner
+        ctx.beginPath();
+        ctx.arc(centerX, centerY, 30, 0, Math.PI * 2);
+        ctx.stroke();
+        break;
+
+      case 'allfives':
+        // Draw scoring zones
+        ctx.fillStyle = 'rgba(255, 215, 0, 0.1)';
+        ctx.fillRect(centerX - 250, centerY - 50, 100, 100);
+        ctx.fillRect(centerX + 150, centerY - 50, 100, 100);
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+        ctx.font = '14px Arial';
+        ctx.fillText('Score Zone', centerX - 220, centerY - 60);
+        ctx.fillText('Score Zone', centerX + 180, centerY - 60);
+        break;
+
+      case 'partner':
+      case 'sixlove':
+        // Draw team areas
+        ctx.strokeStyle = 'rgba(0, 255, 0, 0.3)';
+        ctx.strokeRect(width * 0.2, height * 0.35, width * 0.6, height * 0.1);
+        ctx.strokeRect(width * 0.2, height * 0.55, width * 0.6, height * 0.1);
+        break;
+    }
+
+    ctx.restore();
+  }
+
+  private drawPlayerPositions(ctx: CanvasRenderingContext2D): void {
+    const width = window.innerWidth;
+    const height = window.innerHeight;
+
+    const positions = [
+      { x: width / 2, y: height * 0.85, label: 'You', color: '#00ff00' },
+      { x: width / 2, y: height * 0.25, label: 'Opponent 1', color: '#ff6b6b' },
+      { x: width * 0.15, y: height / 2, label: 'Opponent 2', color: '#ffd700' },
+      { x: width * 0.85, y: height / 2, label: this.gameMode === 'partner' ? 'Partner' : 'Opponent 3', color: '#00ffff' }
+    ];
+
+    ctx.save();
+    positions.forEach((pos, i) => {
+      if (i >= 3 && this.gameMode === 'cutthroat') return; // Only 3 players in cutthroat
+
+      // Draw player position
+      ctx.fillStyle = pos.color;
+      ctx.globalAlpha = 0.3;
+      ctx.beginPath();
+      ctx.arc(pos.x, pos.y, 40, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Draw label
+      ctx.globalAlpha = 1;
+      ctx.fillStyle = 'white';
+      ctx.font = 'bold 14px Arial';
+      ctx.textAlign = 'center';
+      ctx.fillText(pos.label, pos.x, pos.y + 60);
+    });
+    ctx.restore();
+  }
+
   private drawBackground(): void {
     const ctx = this.ctx;
     const width = window.innerWidth;
@@ -1282,6 +1438,9 @@ export class AwesomeDominoGame {
     const ctx = this.ctx;
     const centerY = window.innerHeight / 2 - 50;
     const centerX = window.innerWidth / 2;
+
+    // Draw table surface
+    this.drawTableSurface();
 
     // Draw board area with glow
     ctx.save();
@@ -1494,6 +1653,12 @@ export class AwesomeDominoGame {
 
     // Draw time
     ctx.fillText(`Time: ${Math.floor(this.timeElapsed)}s`, 30, 195);
+
+    // Draw current game mode
+    const rules = getGameRules(this.gameMode);
+    ctx.fillStyle = '#ffd700';
+    ctx.font = 'bold 16px Arial';
+    ctx.fillText(`Mode: ${rules.name}`, 30, 220);
 
     ctx.restore();
   }
@@ -1793,8 +1958,39 @@ export class AwesomeDominoGame {
   }
 
   private canPlayOnSide(tile: Domino, side: 'left' | 'right'): boolean {
-    if (this.board.length === 0) return true;
+    // First tile rules
+    if (this.board.length === 0) {
+      const rules = getGameRules(this.gameMode);
 
+      // Some modes require starting with a specific tile
+      if (rules.startingTile === 'double') {
+        return tile.left === tile.right; // Must start with a double
+      }
+
+      // Six-Love traditionally starts with double-six
+      if (this.gameMode === 'sixlove') {
+        return tile.left === 6 && tile.right === 6;
+      }
+
+      return true;
+    }
+
+    // Mode-specific placement rules
+    if (this.gameMode === 'cross' && this.board.length < 4) {
+      // Cross mode: first double creates spinner, then must play on all 4 sides
+      // Simplified for 2-player
+      const boardEnd = side === 'left' ? this.boardLeftEnd : this.boardRightEnd;
+      return tile.left === boardEnd || tile.right === boardEnd;
+    }
+
+    // Block mode: stricter matching
+    if (this.gameMode === 'block') {
+      const boardEnd = side === 'left' ? this.boardLeftEnd : this.boardRightEnd;
+      // In block mode, you must match exactly
+      return tile.left === boardEnd || tile.right === boardEnd;
+    }
+
+    // Standard matching for other modes
     const boardEnd = side === 'left' ? this.boardLeftEnd : this.boardRightEnd;
     return tile.left === boardEnd || tile.right === boardEnd;
   }

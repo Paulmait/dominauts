@@ -33,7 +33,7 @@ export class StripePaymentIntegration {
   private isInitialized: boolean = false;
 
   private constructor() {
-    this.publishableKey = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY || '';
+    this.publishableKey = process.env.VITE_STRIPE_PUBLISHABLE_KEY || '';
   }
 
   static getInstance(): StripePaymentIntegration {
@@ -172,8 +172,8 @@ export class StripePaymentIntegration {
     }
 
     const priceIds = {
-      monthly: import.meta.env.VITE_STRIPE_PRICE_PREMIUM_MONTHLY,
-      yearly: import.meta.env.VITE_STRIPE_PRICE_PREMIUM_YEARLY
+      monthly: process.env.VITE_STRIPE_PRICE_PREMIUM_MONTHLY,
+      yearly: process.env.VITE_STRIPE_PRICE_PREMIUM_YEARLY
     };
 
     try {
@@ -343,7 +343,7 @@ export class StripePaymentIntegration {
    * Verify webhook signature
    */
   async verifyWebhook(payload: string, signature: string): Promise<any> {
-    const webhookSecret = import.meta.env.STRIPE_WEBHOOK_SECRET;
+    const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
 
     if (!webhookSecret) {
       throw new Error('Webhook secret not configured');

@@ -30,11 +30,11 @@ export class WebAdsService {
 
   // Ad configuration
   private readonly AD_UNITS = {
-    BANNER_TOP: import.meta.env.VITE_AD_BANNER_TOP || 'ca-pub-xxx/xxx',
-    BANNER_BOTTOM: import.meta.env.VITE_AD_BANNER_BOTTOM || 'ca-pub-xxx/xxx',
-    INTERSTITIAL: import.meta.env.VITE_AD_INTERSTITIAL || 'ca-pub-xxx/xxx',
-    REWARDED: import.meta.env.VITE_AD_REWARDED || 'ca-pub-xxx/xxx',
-    NATIVE: import.meta.env.VITE_AD_NATIVE || 'ca-pub-xxx/xxx'
+    BANNER_TOP: process.env.VITE_AD_BANNER_TOP || 'ca-pub-xxx/xxx',
+    BANNER_BOTTOM: process.env.VITE_AD_BANNER_BOTTOM || 'ca-pub-xxx/xxx',
+    INTERSTITIAL: process.env.VITE_AD_INTERSTITIAL || 'ca-pub-xxx/xxx',
+    REWARDED: process.env.VITE_AD_REWARDED || 'ca-pub-xxx/xxx',
+    NATIVE: process.env.VITE_AD_NATIVE || 'ca-pub-xxx/xxx'
   };
 
   private constructor() {}
@@ -93,7 +93,7 @@ export class WebAdsService {
     script.id = 'google-adsense-script';
     script.async = true;
     script.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js';
-    script.setAttribute('data-ad-client', import.meta.env.VITE_ADSENSE_CLIENT_ID || 'ca-pub-xxx');
+    script.setAttribute('data-ad-client', process.env.VITE_ADSENSE_CLIENT_ID || 'ca-pub-xxx');
     document.head.appendChild(script);
 
     // Initialize adsbygoogle array
@@ -210,7 +210,7 @@ export class WebAdsService {
     const ad = document.createElement('ins');
     ad.className = 'adsbygoogle';
     ad.style.cssText = 'display:block;width:100%;height:90px;';
-    ad.setAttribute('data-ad-client', import.meta.env.VITE_ADSENSE_CLIENT_ID || 'ca-pub-xxx');
+    ad.setAttribute('data-ad-client', process.env.VITE_ADSENSE_CLIENT_ID || 'ca-pub-xxx');
     ad.setAttribute('data-ad-slot', this.AD_UNITS[`BANNER_${position.toUpperCase()}`]);
     ad.setAttribute('data-ad-format', 'horizontal');
     ad.setAttribute('data-full-width-responsive', 'true');
@@ -296,7 +296,7 @@ export class WebAdsService {
       const ad = document.createElement('ins');
       ad.className = 'adsbygoogle';
       ad.style.cssText = 'display:block;width:100%;height:400px;';
-      ad.setAttribute('data-ad-client', import.meta.env.VITE_ADSENSE_CLIENT_ID || 'ca-pub-xxx');
+      ad.setAttribute('data-ad-client', process.env.VITE_ADSENSE_CLIENT_ID || 'ca-pub-xxx');
       ad.setAttribute('data-ad-slot', this.AD_UNITS.INTERSTITIAL);
 
       adContainer.appendChild(closeBtn);
@@ -408,7 +408,7 @@ export class WebAdsService {
         const ad = document.createElement('ins');
         ad.className = 'adsbygoogle';
         ad.style.cssText = 'display:block;width:100%;height:250px;';
-        ad.setAttribute('data-ad-client', import.meta.env.VITE_ADSENSE_CLIENT_ID || 'ca-pub-xxx');
+        ad.setAttribute('data-ad-client', process.env.VITE_ADSENSE_CLIENT_ID || 'ca-pub-xxx');
         ad.setAttribute('data-ad-slot', this.AD_UNITS.REWARDED);
         adContainer.appendChild(ad);
 

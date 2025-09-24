@@ -103,7 +103,7 @@ export async function testSupabaseConnection(): Promise<{
 }
 
 // Auto-test on import in development
-if (import.meta.env.DEV) {
+if (process.env.NODE_ENV === 'development') {
   testSupabaseConnection().then(result => {
     console.log('Supabase test result:', result);
   });

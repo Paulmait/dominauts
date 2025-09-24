@@ -17,7 +17,7 @@ export class GoogleAnalytics {
   private userId: string | null = null;
 
   private constructor() {
-    this.measurementId = import.meta.env.VITE_GA_MEASUREMENT_ID || '';
+    this.measurementId = process.env.VITE_GA_MEASUREMENT_ID || '';
   }
 
   static getInstance(): GoogleAnalytics {

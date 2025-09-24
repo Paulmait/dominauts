@@ -25,7 +25,7 @@ export class SentryErrorTracking {
    * Initialize Sentry
    */
   initialize(): void {
-    const dsn = import.meta.env.VITE_SENTRY_DSN;
+    const dsn = process.env.VITE_SENTRY_DSN;
 
     if (!dsn) {
       console.warn('Sentry DSN not configured - error tracking disabled');
@@ -40,8 +40,8 @@ export class SentryErrorTracking {
     try {
       Sentry.init({
         dsn,
-        environment: import.meta.env.MODE || 'development',
-        release: import.meta.env.VITE_APP_VERSION || '2.0.0',
+        environment: process.env.NODE_ENV || 'development',
+        release: process.env.VITE_APP_VERSION || '2.0.0',
 
         integrations: [
           new BrowserTracing({
@@ -56,7 +56,7 @@ export class SentryErrorTracking {
         ],
 
         // Performance Monitoring
-        tracesSampleRate: import.meta.env.PROD ? 0.1 : 1.0, // 10% in production, 100% in dev
+        tracesSampleRate: process.env.NODE_ENV === 'production' ? 0.1 : 1.0, // 10% in production, 100% in dev
 
         // Session Replay
         replaysSessionSampleRate: 0.1, // 10% of sessions
@@ -83,7 +83,7 @@ export class SentryErrorTracking {
           }
 
           // Don't send events in development unless explicitly enabled
-          if (import.meta.env.DEV && !import.meta.env.VITE_SENTRY_DEBUG) {
+          if (process.env.NODE_ENV === 'development' && !process.env.VITE_SENTRY_DEBUG) {
             console.log('Sentry event (dev mode):', event);
             return null;
           }

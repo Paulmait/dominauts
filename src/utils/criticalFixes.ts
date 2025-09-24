@@ -9,7 +9,7 @@ export const checkCriticalEnvVars = (): boolean => {
     'VITE_APP_URL'
   ];
 
-  const missing = criticalVars.filter(v => !import.meta.env[v]);
+  const missing = criticalVars.filter(v => !process.env[v]);
 
   if (missing.length > 0) {
     console.error('🚨 Critical environment variables missing:', missing);
@@ -43,19 +43,19 @@ export const checkCriticalEnvVars = (): boolean => {
 // 2. Fallback Configuration
 export const getFallbackConfig = () => ({
   supabase: {
-    url: import.meta.env.VITE_SUPABASE_URL || 'https://offline-mode',
-    anonKey: import.meta.env.VITE_SUPABASE_ANON_KEY || 'offline-key'
+    url: process.env.VITE_SUPABASE_URL || 'https://offline-mode',
+    anonKey: process.env.VITE_SUPABASE_ANON_KEY || 'offline-key'
   },
   app: {
-    url: import.meta.env.VITE_APP_URL || window.location.origin,
-    version: import.meta.env.VITE_APP_VERSION || '2.0.0',
-    name: import.meta.env.VITE_APP_NAME || 'Dominauts'
+    url: process.env.VITE_APP_URL || window.location.origin,
+    version: process.env.VITE_APP_VERSION || '2.0.0',
+    name: process.env.VITE_APP_NAME || 'Dominauts'
   },
   features: {
-    multiplayer: import.meta.env.VITE_ENABLE_MULTIPLAYER === 'true' && checkCriticalEnvVars(),
-    analytics: import.meta.env.VITE_ENABLE_ANALYTICS === 'true',
-    ads: import.meta.env.VITE_ENABLE_ADS === 'true',
-    iap: import.meta.env.VITE_ENABLE_IAP === 'true'
+    multiplayer: process.env.VITE_ENABLE_MULTIPLAYER === 'true' && checkCriticalEnvVars(),
+    analytics: process.env.VITE_ENABLE_ANALYTICS === 'true',
+    ads: process.env.VITE_ENABLE_ADS === 'true',
+    iap: process.env.VITE_ENABLE_IAP === 'true'
   }
 });
 
@@ -68,7 +68,7 @@ export const trackEvent = (eventName: string, properties?: any) => {
     }
 
     // Fallback to console in development
-    if (import.meta.env.DEV) {
+    if (process.env.NODE_ENV === 'development') {
       console.log('📊 Event:', eventName, properties);
     }
   } catch (error) {

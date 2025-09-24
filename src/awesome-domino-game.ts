@@ -2,6 +2,8 @@
 // Built with game design best practices for maximum engagement
 
 import { GAME_MODE_RULES, getGameRules, getHowToPlayText } from './game/GameModeRules'
+import { PlayerProfileManager } from './core/PlayerProfile';
+import { ProfileDashboard } from './components/ProfileDashboard';
 
 interface Domino {
   left: number;
@@ -55,6 +57,8 @@ export class AwesomeDominoGame {
   private ctx: CanvasRenderingContext2D;
   private gameMode: 'classic' | 'allfives' | 'block' | 'cutthroat' | 'partner' | 'sixlove' | 'cross' | 'draw' = 'classic';
   private difficulty: 'easy' | 'medium' | 'hard' | 'expert' = 'easy'; // Default to easy as requested
+  private profileManager: PlayerProfileManager;
+  private profileDashboard: ProfileDashboard;
 
   // Game State
   private tiles: Domino[] = [];
@@ -127,7 +131,13 @@ export class AwesomeDominoGame {
     this.setupEventListeners();
     this.initAudio();
     this.initAchievements();
+    this.initProfile();
     this.showMainMenu();
+  }
+
+  private initProfile(): void {
+    this.profileManager = PlayerProfileManager.getInstance();
+    this.profileDashboard = new ProfileDashboard();
   }
 
   private setupDOM(): void {
@@ -460,7 +470,43 @@ export class AwesomeDominoGame {
       z-index: 1000;
     `;
 
+    const profile = this.profileManager.getProfile();
+    const avatarIcon = this.profileManager.getAvatarIcon();
+    const username = this.profileManager.getUsername();
+    const level = this.profileManager.getLevel();
+
     menu.innerHTML = `
+      <!-- Profile Section -->
+      <div style="
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        background: rgba(255,255,255,0.1);
+        padding: 10px 20px;
+        border-radius: 50px;
+        cursor: pointer;
+        transition: all 0.3s;
+      " onclick="game.openProfile()" onmouseover="this.style.background='rgba(255,255,255,0.2)'" onmouseout="this.style.background='rgba(255,255,255,0.1)'">
+        <div style="
+          width: 50px;
+          height: 50px;
+          background: rgba(255,255,255,0.2);
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 30px;
+          border: 2px solid white;
+        ">${avatarIcon}</div>
+        <div style="color: white;">
+          <div style="font-weight: bold; font-size: 16px;">${username}</div>
+          <div style="opacity: 0.8; font-size: 14px;">Level ${level}</div>
+        </div>
+      </div>
+
       <h1 style="font-size: 72px; color: white; margin-bottom: 20px; text-shadow: 0 0 30px rgba(255,255,255,0.5);">
         🎲 DOMINAUTS 🎲
       </h1>
@@ -640,6 +686,10 @@ export class AwesomeDominoGame {
 
     // Make the game instance available globally for button clicks
     (window as any).game = this;
+  }
+
+  public openProfile(): void {
+    this.profileDashboard.open();
   }
 
   public startGame(difficulty: 'easy' | 'medium' | 'hard' | 'expert'): void {
@@ -2232,6 +2282,25 @@ export class AwesomeDominoGame {
     this.gameStarted = false;
     this.playSound('win');
 
+    // Track game results in profile
+    const perfectGame = this.aiScore === 0;
+    this.profileManager.updateStats({
+      won: true,
+      score: this.playerScore,
+      mode: this.gameMode,
+      tilesPlayed: this.movesCount,
+      gameTime: this.timeElapsed,
+      perfectGame: perfectGame
+    });
+
+    // Add XP for winning
+    let xpEarned = 50; // Base XP for winning
+    xpEarned += Math.floor(this.playerScore / 10); // Bonus based on score
+    if (perfectGame) xpEarned += 100; // Perfect game bonus
+    if (this.difficulty === 'hard') xpEarned *= 1.5;
+    if (this.difficulty === 'expert') xpEarned *= 2;
+    this.profileManager.addXP(Math.floor(xpEarned));
+
     // Update achievements
     this.unlockAchievement('first-win');
     if (this.timeElapsed < 120) {
@@ -2262,6 +2331,21 @@ export class AwesomeDominoGame {
 
   private aiWins(blocked: boolean = false): void {
     this.gameStarted = false;
+
+    // Track game results in profile
+    this.profileManager.updateStats({
+      won: false,
+      score: this.playerScore,
+      mode: this.gameMode,
+      tilesPlayed: this.movesCount,
+      gameTime: this.timeElapsed,
+      perfectGame: false
+    });
+
+    // Add small XP for participating
+    let xpEarned = 10; // Participation XP
+    xpEarned += Math.floor(this.playerScore / 20); // Small bonus based on score
+    this.profileManager.addXP(Math.floor(xpEarned));
 
     // Show lose screen
     this.showLoseScreen(blocked);

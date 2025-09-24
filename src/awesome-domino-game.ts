@@ -51,7 +51,7 @@ interface Achievement {
 export class AwesomeDominoGame {
   private canvas: HTMLCanvasElement;
   private ctx: CanvasRenderingContext2D;
-  private gameMode: 'classic' | 'allfives' | 'block' = 'classic';
+  private gameMode: 'classic' | 'allfives' | 'block' | 'cutthroat' | 'partner' | 'sixlove' | 'cross' | 'draw' = 'classic';
   private difficulty: 'easy' | 'medium' | 'hard' | 'expert' = 'medium';
 
   // Game State
@@ -414,50 +414,125 @@ export class AwesomeDominoGame {
         The Ultimate Domino Experience
       </p>
 
-      <div id="modeSelection" style="display: flex; gap: 30px; margin-bottom: 30px;">
+      <div id="modeSelection" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 30px; max-width: 1000px;">
         <div class="game-mode-card" data-mode="classic" style="
           background: rgba(255,255,255,0.1);
           border: 2px solid rgba(255,255,255,0.3);
           border-radius: 20px;
-          padding: 30px;
+          padding: 20px;
           text-align: center;
           cursor: pointer;
           transition: all 0.3s;
           backdrop-filter: blur(10px);
         ">
-          <div style="font-size: 64px; margin-bottom: 15px;">🎯</div>
-          <h3 style="color: white; margin: 10px 0;">Classic</h3>
-          <p style="color: rgba(255,255,255,0.8); font-size: 14px;">Traditional matching</p>
+          <div style="font-size: 48px; margin-bottom: 10px;">🎯</div>
+          <h3 style="color: white; margin: 5px 0;">Classic</h3>
+          <p style="color: rgba(255,255,255,0.8); font-size: 12px;">Traditional</p>
+        </div>
+
+        <div class="game-mode-card" data-mode="cutthroat" style="
+          background: rgba(255,255,255,0.1);
+          border: 2px solid rgba(255,255,255,0.3);
+          border-radius: 20px;
+          padding: 20px;
+          text-align: center;
+          cursor: pointer;
+          transition: all 0.3s;
+          backdrop-filter: blur(10px);
+        ">
+          <div style="font-size: 48px; margin-bottom: 10px;">🎭</div>
+          <h3 style="color: white; margin: 5px 0;">Cutthroat</h3>
+          <p style="color: rgba(255,255,255,0.8); font-size: 12px;">3 players</p>
+        </div>
+
+        <div class="game-mode-card" data-mode="partner" style="
+          background: rgba(255,255,255,0.1);
+          border: 2px solid rgba(255,255,255,0.3);
+          border-radius: 20px;
+          padding: 20px;
+          text-align: center;
+          cursor: pointer;
+          transition: all 0.3s;
+          backdrop-filter: blur(10px);
+        ">
+          <div style="font-size: 48px; margin-bottom: 10px;">🤝</div>
+          <h3 style="color: white; margin: 5px 0;">Partner</h3>
+          <p style="color: rgba(255,255,255,0.8); font-size: 12px;">2v2 teams</p>
+        </div>
+
+        <div class="game-mode-card" data-mode="sixlove" style="
+          background: rgba(255,255,255,0.1);
+          border: 2px solid rgba(255,255,255,0.3);
+          border-radius: 20px;
+          padding: 20px;
+          text-align: center;
+          cursor: pointer;
+          transition: all 0.3s;
+          backdrop-filter: blur(10px);
+        ">
+          <div style="font-size: 48px; margin-bottom: 10px;">🇯🇲</div>
+          <h3 style="color: white; margin: 5px 0;">Six-Love</h3>
+          <p style="color: rgba(255,255,255,0.8); font-size: 12px;">Win 6 straight</p>
+        </div>
+
+        <div class="game-mode-card" data-mode="cross" style="
+          background: rgba(255,255,255,0.1);
+          border: 2px solid rgba(255,255,255,0.3);
+          border-radius: 20px;
+          padding: 20px;
+          text-align: center;
+          cursor: pointer;
+          transition: all 0.3s;
+          backdrop-filter: blur(10px);
+        ">
+          <div style="font-size: 48px; margin-bottom: 10px;">✚</div>
+          <h3 style="color: white; margin: 5px 0;">Cross</h3>
+          <p style="color: rgba(255,255,255,0.8); font-size: 12px;">4-way layout</p>
+        </div>
+
+        <div class="game-mode-card" data-mode="draw" style="
+          background: rgba(255,255,255,0.1);
+          border: 2px solid rgba(255,255,255,0.3);
+          border-radius: 20px;
+          padding: 20px;
+          text-align: center;
+          cursor: pointer;
+          transition: all 0.3s;
+          backdrop-filter: blur(10px);
+        ">
+          <div style="font-size: 48px; margin-bottom: 10px;">⚡</div>
+          <h3 style="color: white; margin: 5px 0;">Draw</h3>
+          <p style="color: rgba(255,255,255,0.8); font-size: 12px;">Fast-paced</p>
         </div>
 
         <div class="game-mode-card" data-mode="allfives" style="
           background: rgba(255,255,255,0.1);
           border: 2px solid rgba(255,255,255,0.3);
           border-radius: 20px;
-          padding: 30px;
+          padding: 20px;
           text-align: center;
           cursor: pointer;
           transition: all 0.3s;
           backdrop-filter: blur(10px);
         ">
-          <div style="font-size: 64px; margin-bottom: 15px;">💯</div>
-          <h3 style="color: white; margin: 10px 0;">All Fives</h3>
-          <p style="color: rgba(255,255,255,0.8); font-size: 14px;">Score with multiples of 5</p>
+          <div style="font-size: 48px; margin-bottom: 10px;">💯</div>
+          <h3 style="color: white; margin: 5px 0;">All Fives</h3>
+          <p style="color: rgba(255,255,255,0.8); font-size: 12px;">Score 5s</p>
         </div>
 
         <div class="game-mode-card" data-mode="block" style="
           background: rgba(255,255,255,0.1);
           border: 2px solid rgba(255,255,255,0.3);
           border-radius: 20px;
-          padding: 30px;
+          padding: 20px;
           text-align: center;
           cursor: pointer;
           transition: all 0.3s;
           backdrop-filter: blur(10px);
         ">
-          <div style="font-size: 64px; margin-bottom: 15px;">🚫</div>
-          <h3 style="color: white; margin: 10px 0;">Block</h3>
-          <p style="color: rgba(255,255,255,0.8); font-size: 14px;">Strategic blocking</p>
+          <div style="font-size: 48px; margin-bottom: 10px;">🚫</div>
+          <h3 style="color: white; margin: 5px 0;">Block</h3>
+          <p style="color: rgba(255,255,255,0.8); font-size: 12px;">No drawing</p>
         </div>
       </div>
 

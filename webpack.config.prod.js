@@ -11,7 +11,8 @@ const imageminPngquant = require('imagemin-pngquant');
 module.exports = {
   mode: 'production',
   entry: {
-    main: './src/awesome-domino-game.ts'
+    main: './src/awesome-domino-game.ts',
+    premium: './src/premium-domino.ts'
   },
 
   output: {

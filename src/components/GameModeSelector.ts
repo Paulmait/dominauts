@@ -31,6 +31,81 @@ export class GameModeSelector {
       players: '2-4 players'
     },
     {
+      id: 'cutthroat',
+      name: 'Cutthroat Dominoes',
+      region: '🎯 Three-Hand',
+      description: 'Three-player individual competition with no partnerships',
+      image: 'cutthroat-preview.svg',
+      rules: [
+        'Three players compete individually',
+        'No partnerships or teams',
+        'Each player for themselves',
+        'Popular in casual street games'
+      ],
+      difficulty: 'Medium',
+      players: '3 players'
+    },
+    {
+      id: 'partner',
+      name: 'Partner Dominoes',
+      region: '🤝 Four-Hand',
+      description: 'Traditional four-player format with two teams of two',
+      image: 'partner-preview.svg',
+      rules: [
+        'Partners sit opposite each other',
+        'Team scoring system',
+        'First team to 150 points wins',
+        'Most traditional format'
+      ],
+      difficulty: 'Medium',
+      players: '4 players (2 teams)'
+    },
+    {
+      id: 'sixlove',
+      name: 'Six-Love Dominoes',
+      region: '🇯🇲 Jamaica',
+      description: 'Win six games straight for a "six love" skunk victory',
+      image: 'sixlove-preview.svg',
+      rules: [
+        'Based on Partner Dominoes',
+        'Win 6 consecutive games for "six love"',
+        'Bragging rights & bonus rewards',
+        'Cultural staple in Jamaica'
+      ],
+      difficulty: 'Hard',
+      players: '4 players (2 teams)'
+    },
+    {
+      id: 'cross',
+      name: 'Cross Dominoes',
+      region: '✚ Tournament',
+      description: 'Play extends in four directions from center double',
+      image: 'cross-preview.svg',
+      rules: [
+        'Start with double in center',
+        'Play extends in 4 directions',
+        'Common in tournaments',
+        'Strategic positioning matters'
+      ],
+      difficulty: 'Hard',
+      players: '2-4 players'
+    },
+    {
+      id: 'draw',
+      name: 'Draw Dominoes',
+      region: '⚡ Fast-Paced',
+      description: 'Draw from boneyard until you can play - no passing allowed',
+      image: 'draw-preview.svg',
+      rules: [
+        'Must draw if can\'t play',
+        'No passing allowed',
+        'Fast-paced gameplay',
+        'Popular in informal settings'
+      ],
+      difficulty: 'Easy',
+      players: '2-4 players'
+    },
+    {
       id: 'cuba',
       name: 'Cuban Dominoes',
       region: '🇨🇺 Cuba',

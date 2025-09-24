@@ -1,0 +1,19 @@
+User-agent: *
+Allow: /
+
+# Block admin and API endpoints
+Disallow: /admin/
+Disallow: /api/
+Disallow: /.well-known/
+Disallow: /supabase/
+
+# Allow search engines to index game pages
+Allow: /game
+Allow: /leaderboard
+Allow: /tournaments
+
+# Sitemap location
+Sitemap: https://dominauts.com/sitemap.xml
+
+# Crawl delay for bot protection
+Crawl-delay: 1

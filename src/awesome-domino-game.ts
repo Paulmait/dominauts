@@ -1,6 +1,8 @@
 // 🎮 Ultimate Domino Game Experience - Modern, Engaging, and Awesome!
 // Built with game design best practices for maximum engagement
 
+import { GAME_MODE_RULES, getGameRules, getHowToPlayText } from './game/GameModeRules'
+
 interface Domino {
   left: number;
   right: number;
@@ -52,7 +54,7 @@ export class AwesomeDominoGame {
   private canvas: HTMLCanvasElement;
   private ctx: CanvasRenderingContext2D;
   private gameMode: 'classic' | 'allfives' | 'block' | 'cutthroat' | 'partner' | 'sixlove' | 'cross' | 'draw' = 'classic';
-  private difficulty: 'easy' | 'medium' | 'hard' | 'expert' = 'medium';
+  private difficulty: 'easy' | 'medium' | 'hard' | 'expert' = 'easy'; // Default to easy as requested
 
   // Game State
   private tiles: Domino[] = [];
@@ -287,7 +289,7 @@ export class AwesomeDominoGame {
     }
   }
 
-  private playSound(type: 'click' | 'place' | 'win' | 'combo' | 'powerup' | 'error'): void {
+  private playSound(type: 'click' | 'place' | 'win' | 'combo' | 'powerup' | 'error' | 'slam'): void {
     if (!this.audioContext || !this.soundEnabled) return;
 
     const oscillator = this.audioContext.createOscillator();
@@ -329,6 +331,24 @@ export class AwesomeDominoGame {
         oscillator.frequency.value = 200;
         gainNode.gain.value = 0.1 * this.sfxVolume;
         oscillator.type = 'sawtooth';
+        break;
+      case 'slam':
+        // Deep, impactful slam sound
+        oscillator.frequency.value = 80; // Low frequency for impact
+        gainNode.gain.value = 0.4 * this.sfxVolume;
+        oscillator.type = 'sawtooth';
+        // Add a second impact for depth
+        setTimeout(() => {
+          const osc2 = this.audioContext!.createOscillator();
+          const gain2 = this.audioContext!.createGain();
+          osc2.connect(gain2);
+          gain2.connect(this.audioContext!.destination);
+          osc2.frequency.value = 120;
+          gain2.gain.value = 0.3 * this.sfxVolume;
+          osc2.type = 'square';
+          osc2.start(this.audioContext!.currentTime);
+          osc2.stop(this.audioContext!.currentTime + 0.15);
+        }, 20);
         break;
     }
 
@@ -638,7 +658,9 @@ export class AwesomeDominoGame {
   }
 
   private dealTiles(): void {
-    const tilesPerPlayer = 7;
+    // Get mode-specific rules
+    const rules = getGameRules(this.gameMode);
+    const tilesPerPlayer = rules.tilesPerPlayer;
 
     for (let i = 0; i < tilesPerPlayer; i++) {
       const playerTile = this.tiles.pop()!;
@@ -647,6 +669,10 @@ export class AwesomeDominoGame {
       this.playerHand.push(playerTile);
       this.aiHand.push(aiTile);
     }
+
+    // For team modes, we would need additional players here
+    // For now, keeping it simple with 2 players
+    // TODO: Implement full multiplayer support for team modes
 
     this.arrangePlayerHand();
   }
@@ -791,45 +817,31 @@ export class AwesomeDominoGame {
       z-index: 3000;
     `;
 
+    // Get mode-specific rules and content
+    const rules = getGameRules(this.gameMode);
+    const howToPlayHTML = getHowToPlayText(this.gameMode);
+
     tutorial.innerHTML = `
-      <div style="background: rgba(255,255,255,0.1); padding: 40px; border-radius: 20px; max-width: 600px; max-height: 80vh; overflow-y: auto;">
-        <h2 style="color: white; text-align: center; margin-bottom: 30px;">🎮 How to Play Dominoes 🎮</h2>
+      <div style="background: rgba(255,255,255,0.1); padding: 40px; border-radius: 20px; max-width: 700px; max-height: 80vh; overflow-y: auto;">
+        ${howToPlayHTML}
 
-        <div style="color: white; font-size: 18px; line-height: 1.6;">
-          <h3 style="color: #00ff00;">🎯 Goal:</h3>
-          <p>Be the first to play all your dominoes or have the least pips when blocked!</p>
-
-          <h3 style="color: #00ff00; margin-top: 20px;">🎲 How to Play:</h3>
-          <ol style="margin-left: 20px;">
-            <li>Drag a domino from your hand to the board</li>
-            <li>Match the numbers on your domino with the ends of the chain</li>
-            <li>If you can't play, click the PASS button</li>
-            <li>First to play all dominoes wins!</li>
-          </ol>
-
-          <h3 style="color: #00ff00; margin-top: 20px;">✨ Power-Ups (Bottom of screen):</h3>
-          <div style="margin-left: 20px;">
-            <p>💡 <b>Hint:</b> Shows you a valid move (glowing green)</p>
-            <p>↩️ <b>Undo:</b> Take back your last move</p>
-            <p>👁️ <b>Peek:</b> See how many tiles AI has</p>
-            <p>2️⃣ <b>Double Score:</b> Double points for next 3 moves (All Fives mode)</p>
-          </div>
-
-          <h3 style="color: #00ff00; margin-top: 20px;">🎮 Game Modes:</h3>
-          <div style="margin-left: 20px;">
-            <p><b>Classic:</b> Standard dominoes - just match the numbers</p>
-            <p><b>All Fives:</b> Score points when ends add to 5, 10, 15, etc.</p>
-            <p><b>Block:</b> Strategic play - block your opponent!</p>
-          </div>
-
-          <h3 style="color: #00ff00; margin-top: 20px;">💡 Tips:</h3>
-          <ul style="margin-left: 20px;">
-            <li>Green glow = valid move</li>
-            <li>Red = can't play there</li>
-            <li>Watch the tile counts to track AI's progress</li>
-            <li>Use power-ups wisely - they have cooldowns!</li>
-          </ul>
+        <h3 style="color: #00ff00; margin-top: 30px;">✨ Power-Ups (Bottom of screen):</h3>
+        <div style="margin-left: 20px; color: white;">
+          <p>💡 <b>Hint:</b> Shows you a valid move (glowing green)</p>
+          <p>↩️ <b>Undo:</b> Take back your last move</p>
+          <p>👁️ <b>Peek:</b> See how many tiles AI has</p>
+          ${this.gameMode === 'allfives' ? '<p>2️⃣ <b>Double Score:</b> Double points for next 3 moves</p>' : ''}
         </div>
+
+        <h3 style="color: #00ff00; margin-top: 20px;">💡 Tips:</h3>
+        <ul style="margin-left: 20px; color: white;">
+          <li>Green glow = valid move</li>
+          <li>Red = can't play there</li>
+          <li>Watch the tile counts to track AI's progress</li>
+          <li>Use power-ups wisely - they have cooldowns!</li>
+          ${this.gameMode === 'partner' || this.gameMode === 'sixlove' ? '<li>Team play: Your partner sits opposite you</li>' : ''}
+          ${this.gameMode === 'cross' ? '<li>Play in 4 directions from the spinner!</li>' : ''}
+        </ul>
 
         <button onclick="document.getElementById('gameTutorial').remove()" style="
           margin-top: 30px;
@@ -1197,7 +1209,7 @@ export class AwesomeDominoGame {
     // Draw score panel
     ctx.save();
     ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
-    ctx.fillRect(20, 20, 250, 150);
+    ctx.fillRect(20, 20, 280, 200);
 
     ctx.fillStyle = 'white';
     ctx.font = 'bold 20px Arial';
@@ -1212,8 +1224,20 @@ export class AwesomeDominoGame {
     ctx.fillText(`Your tiles: ${this.playerHand.length}`, 30, 130);
     ctx.fillText(`AI tiles: ${this.aiHand.length}`, 150, 130);
 
+    // Calculate and display pip counts
+    const playerPips = this.playerHand.reduce((sum, tile) => sum + tile.left + tile.right, 0);
+    const aiPips = this.aiHand.reduce((sum, tile) => sum + tile.left + tile.right, 0);
+
+    ctx.fillStyle = '#00ff00';
+    ctx.font = 'bold 14px Arial';
+    ctx.fillText('PIP COUNT', 30, 155);
+    ctx.fillStyle = 'white';
+    ctx.font = '14px Arial';
+    ctx.fillText(`You: ${playerPips} pips`, 30, 175);
+    ctx.fillText(`AI: ${aiPips} pips`, 150, 175);
+
     // Draw time
-    ctx.fillText(`Time: ${Math.floor(this.timeElapsed)}s`, 30, 155);
+    ctx.fillText(`Time: ${Math.floor(this.timeElapsed)}s`, 30, 195);
 
     ctx.restore();
   }
@@ -1551,9 +1575,34 @@ export class AwesomeDominoGame {
     // Update score
     this.updateScore(tile);
 
-    // Effects (minimal, no particles)
-    this.playSound('place');
-    this.screenShake = 3;
+    // Domino slam effect for doubles or winning moves
+    const isDouble = tile.left === tile.right;
+    const isWinningMove = this.playerHand.length === 0;
+
+    if (isDouble || isWinningMove) {
+      // SLAM IT!
+      this.playSound('slam');
+      this.screenShake = 10;
+
+      // Create impact particles
+      for (let i = 0; i < 20; i++) {
+        this.particles.push({
+          x: window.innerWidth / 2,
+          y: window.innerHeight / 2,
+          vx: Math.random() * 10 - 5,
+          vy: Math.random() * -10 - 5,
+          life: 1,
+          maxLife: 1,
+          color: '#FFD700',
+          size: Math.random() * 5 + 3,
+          type: 'star'
+        });
+      }
+    } else {
+      // Normal placement
+      this.playSound('place');
+      this.screenShake = 3;
+    }
 
     // Check win
     if (this.playerHand.length === 0) {

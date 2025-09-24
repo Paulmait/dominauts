@@ -160,6 +160,40 @@ export class AwesomeDominoGame {
         50% { transform: scale(1.05); }
       }
 
+      @keyframes tilePlacement {
+        0% { transform: scale(1.3) rotate(180deg); opacity: 0.5; }
+        50% { transform: scale(1.1) rotate(90deg); }
+        100% { transform: scale(1) rotate(0deg); opacity: 1; }
+      }
+
+      @keyframes slideInFromTop {
+        from { transform: translateY(-100px); opacity: 0; }
+        to { transform: translateY(0); opacity: 1; }
+      }
+
+      @keyframes fadeInOut {
+        0% { opacity: 0; }
+        20% { opacity: 1; }
+        80% { opacity: 1; }
+        100% { opacity: 0; }
+      }
+
+      @keyframes scorePopup {
+        0% { transform: translate(-50%, -50%) scale(0); opacity: 1; }
+        50% { transform: translate(-50%, -50%) scale(1.5); }
+        100% { transform: translate(-50%, -100px) scale(1); opacity: 0; }
+      }
+
+      @keyframes slideDown {
+        from { transform: translateX(-50%) translateY(-50px); opacity: 0; }
+        to { transform: translateX(-50%) translateY(0); opacity: 1; }
+      }
+
+      @keyframes fadeOut {
+        from { opacity: 1; }
+        to { opacity: 0; }
+      }
+
       .menu-button {
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         border: none;
@@ -788,10 +822,182 @@ export class AwesomeDominoGame {
     }
 
     if (this.isPaused) {
-      this.showMessage('Game Paused', 0);
+      this.showPauseMenu();
     } else {
-      const msg = document.querySelector('[style*="Game Paused"]');
-      if (msg) msg.remove();
+      this.closePauseMenu();
+    }
+  }
+
+  private showPauseMenu(): void {
+    // Remove any existing pause menu
+    this.closePauseMenu();
+
+    const pauseMenu = document.createElement('div');
+    pauseMenu.id = 'pauseMenu';
+    pauseMenu.style.cssText = `
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.85);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 5000;
+      backdrop-filter: blur(5px);
+    `;
+
+    const menuContent = document.createElement('div');
+    menuContent.style.cssText = `
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      padding: 50px;
+      border-radius: 30px;
+      text-align: center;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+      animation: slideInFromTop 0.3s ease-out;
+    `;
+
+    menuContent.innerHTML = `
+      <h1 style="color: white; font-size: 48px; margin-bottom: 30px;">⏸️ GAME PAUSED</h1>
+
+      <div style="display: flex; flex-direction: column; gap: 20px; margin-top: 30px;">
+        <button id="resumeBtn" style="
+          padding: 20px 50px;
+          background: linear-gradient(135deg, #00ff00 0%, #00cc00 100%);
+          border: none;
+          color: white;
+          font-size: 24px;
+          font-weight: bold;
+          border-radius: 15px;
+          cursor: pointer;
+          transition: transform 0.2s;
+        ">▶️ Resume Game</button>
+
+        <button id="restartBtn" style="
+          padding: 20px 50px;
+          background: linear-gradient(135deg, #ffd700 0%, #ffb700 100%);
+          border: none;
+          color: white;
+          font-size: 24px;
+          font-weight: bold;
+          border-radius: 15px;
+          cursor: pointer;
+          transition: transform 0.2s;
+        ">🔄 Restart Game</button>
+
+        <button id="mainMenuBtn" style="
+          padding: 20px 50px;
+          background: linear-gradient(135deg, #ff6b6b 0%, #ff5252 100%);
+          border: none;
+          color: white;
+          font-size: 24px;
+          font-weight: bold;
+          border-radius: 15px;
+          cursor: pointer;
+          transition: transform 0.2s;
+        ">🏠 Main Menu</button>
+
+        <button id="soundToggleBtn" style="
+          padding: 20px 50px;
+          background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);
+          border: none;
+          color: white;
+          font-size: 24px;
+          font-weight: bold;
+          border-radius: 15px;
+          cursor: pointer;
+          transition: transform 0.2s;
+        ">${this.soundEnabled ? '🔊 Sound: ON' : '🔇 Sound: OFF'}</button>
+      </div>
+
+      <div style="margin-top: 40px; color: white; opacity: 0.8;">
+        <p style="font-size: 18px;">Game Mode: <strong>${getGameRules(this.gameMode).name}</strong></p>
+        <p style="font-size: 18px;">Time: <strong>${Math.floor(this.timeElapsed)}s</strong></p>
+      </div>
+    `;
+
+    pauseMenu.appendChild(menuContent);
+    document.body.appendChild(pauseMenu);
+
+    // Add button listeners
+    document.getElementById('resumeBtn')?.addEventListener('click', () => {
+      this.playSound('click');
+      this.togglePause();
+    });
+
+    document.getElementById('restartBtn')?.addEventListener('click', () => {
+      this.playSound('click');
+      if (confirm('Are you sure you want to restart? Current progress will be lost.')) {
+        this.restartGame();
+      }
+    });
+
+    document.getElementById('mainMenuBtn')?.addEventListener('click', () => {
+      this.playSound('click');
+      if (confirm('Return to main menu? Current progress will be lost.')) {
+        location.reload();
+      }
+    });
+
+    document.getElementById('soundToggleBtn')?.addEventListener('click', () => {
+      this.soundEnabled = !this.soundEnabled;
+      this.playSound('click');
+      const btn = document.getElementById('soundToggleBtn');
+      if (btn) {
+        btn.innerHTML = this.soundEnabled ? '🔊 Sound: ON' : '🔇 Sound: OFF';
+      }
+    });
+
+    // Add hover effects
+    const buttons = menuContent.querySelectorAll('button');
+    buttons.forEach(btn => {
+      btn.addEventListener('mouseenter', () => {
+        (btn as HTMLElement).style.transform = 'scale(1.05)';
+      });
+      btn.addEventListener('mouseleave', () => {
+        (btn as HTMLElement).style.transform = 'scale(1)';
+      });
+    });
+  }
+
+  private closePauseMenu(): void {
+    const pauseMenu = document.getElementById('pauseMenu');
+    if (pauseMenu) {
+      pauseMenu.remove();
+    }
+  }
+
+  private restartGame(): void {
+    // Reset all game state
+    this.tiles = [];
+    this.playerHand = [];
+    this.aiHand = [];
+    this.board = [];
+    this.boardLeftEnd = -1;
+    this.boardRightEnd = -1;
+    this.currentPlayer = 'player';
+    this.playerScore = 0;
+    this.aiScore = 0;
+    this.combo = 0;
+    this.movesCount = 0;
+    this.timeElapsed = 0;
+    this.gameStartTime = Date.now();
+    this.isPaused = false;
+    this.particles = [];
+
+    // Close pause menu
+    this.closePauseMenu();
+
+    // Reinitialize the game
+    this.createDominoes();
+    this.dealTiles();
+    this.gameStarted = true;
+
+    // Update pause button
+    const pauseBtn = document.getElementById('pauseBtn');
+    if (pauseBtn) {
+      pauseBtn.innerHTML = '⏸️';
     }
   }
 
@@ -1622,20 +1828,124 @@ export class AwesomeDominoGame {
   }
 
   private updateScore(tile: Domino): void {
-    if (this.gameMode === 'allfives') {
-      const total = this.boardLeftEnd + this.boardRightEnd;
-      if (total % 5 === 0 && total > 0) {
-        const points = total;
-        this.playerScore += points;
-        this.combo++;
-        this.maxCombo = Math.max(this.maxCombo, this.combo);
+    const rules = getGameRules(this.gameMode);
+    let pointsEarned = 0;
 
-        // Show score popup
-        this.showScorePopup(points);
+    switch (this.gameMode) {
+      case 'allfives':
+        // Score when board ends total to multiple of 5
+        const total = this.boardLeftEnd + this.boardRightEnd;
+        if (total % 5 === 0 && total > 0) {
+          pointsEarned = total;
+          this.combo++;
+          this.maxCombo = Math.max(this.maxCombo, this.combo);
+        } else {
+          this.combo = 0;
+        }
+        break;
+
+      case 'cross':
+        // Score points from all 4 ends when multiple of 5
+        // For now, simplified to 2 ends
+        const crossTotal = this.boardLeftEnd + this.boardRightEnd;
+        if (crossTotal % 5 === 0 && crossTotal > 0) {
+          pointsEarned = crossTotal;
+        }
+        break;
+
+      case 'classic':
+      case 'block':
+      case 'draw':
+        // Points scored at end of round
+        // But show pip advantage in real-time
+        const playerPips = this.playerHand.reduce((sum, t) => sum + t.left + t.right, 0);
+        const aiPips = this.aiHand.reduce((sum, t) => sum + t.left + t.right, 0);
+        if (aiPips > playerPips) {
+          // Show pip advantage
+          this.showPipAdvantage(aiPips - playerPips);
+        }
+        break;
+
+      case 'partner':
+      case 'sixlove':
+      case 'cutthroat':
+        // Team scoring or special rules
+        // Basic scoring for now
+        if (tile.left === tile.right) {
+          pointsEarned = tile.left * 2; // Double tiles worth double
+        }
+        break;
+    }
+
+    // Apply score if earned
+    if (pointsEarned > 0) {
+      // Check for double score power-up
+      const isDoubleScore = this.powerUps.some(p => p.type === 'double-score' && p.active);
+      if (isDoubleScore) {
+        pointsEarned *= 2;
+      }
+
+      this.playerScore += pointsEarned;
+
+      // Show score popup with animation
+      this.showScorePopup(pointsEarned);
+
+      // Play sound based on score size
+      if (pointsEarned >= 20) {
         this.playSound('combo');
       } else {
-        this.combo = 0;
+        this.playSound('powerup');
       }
+
+      // Create celebratory particles
+      this.createScoreParticles(pointsEarned);
+    }
+
+    // Update score display immediately
+    this.updateScoreDisplay();
+  }
+
+  private showPipAdvantage(advantage: number): void {
+    const msg = document.createElement('div');
+    msg.style.cssText = `
+      position: fixed;
+      bottom: 180px;
+      right: 20px;
+      background: rgba(0, 255, 0, 0.2);
+      color: #00ff00;
+      padding: 10px 20px;
+      border-radius: 10px;
+      font-size: 16px;
+      z-index: 500;
+      animation: fadeInOut 2s ease-out;
+    `;
+    msg.innerHTML = `Pip Advantage: +${advantage}`;
+    document.body.appendChild(msg);
+    setTimeout(() => msg.remove(), 2000);
+  }
+
+  private createScoreParticles(points: number): void {
+    const particleCount = Math.min(points, 30);
+    for (let i = 0; i < particleCount; i++) {
+      this.particles.push({
+        x: window.innerWidth / 2,
+        y: window.innerHeight / 2,
+        vx: (Math.random() - 0.5) * 8,
+        vy: Math.random() * -8 - 2,
+        life: 1,
+        maxLife: 1,
+        color: '#FFD700',
+        size: Math.random() * 4 + 2,
+        type: 'star'
+      });
+    }
+  }
+
+  private updateScoreDisplay(): void {
+    // Force immediate visual update of score
+    const ctx = this.ctx;
+    if (ctx) {
+      this.drawScore();
     }
   }
 
@@ -1775,37 +2085,99 @@ export class AwesomeDominoGame {
 
     const passBtn = document.createElement('button');
     passBtn.id = 'passButton';
-    passBtn.innerHTML = 'PASS (No Valid Moves)';
+    passBtn.innerHTML = `
+      <div style="display: flex; flex-direction: column; align-items: center;">
+        <span style="font-size: 36px; margin-bottom: 5px;">🚫</span>
+        <span style="font-size: 24px; font-weight: bold;">PASS TURN</span>
+        <span style="font-size: 14px; opacity: 0.8;">(No Valid Moves)</span>
+      </div>
+    `;
     passBtn.style.cssText = `
       position: fixed;
-      bottom: 200px;
+      bottom: 250px;
       left: 50%;
       transform: translateX(-50%);
-      padding: 20px 40px;
+      padding: 25px 50px;
       background: linear-gradient(135deg, #ff6b6b 0%, #ff8e53 100%);
-      border: none;
+      border: 3px solid white;
       color: white;
-      font-size: 20px;
-      font-weight: bold;
-      border-radius: 30px;
+      border-radius: 20px;
       cursor: pointer;
-      box-shadow: 0 10px 30px rgba(255, 107, 107, 0.4);
-      animation: pulse 2s infinite;
-      z-index: 1000;
+      box-shadow: 0 15px 40px rgba(255, 107, 107, 0.6);
+      animation: pulseGlow 1.5s infinite;
+      z-index: 2000;
+      transition: transform 0.2s;
     `;
+
+    // Add CSS animation for the glow effect
+    if (!document.getElementById('passButtonStyles')) {
+      const style = document.createElement('style');
+      style.id = 'passButtonStyles';
+      style.innerHTML = `
+        @keyframes pulseGlow {
+          0% { transform: translateX(-50%) scale(1); box-shadow: 0 15px 40px rgba(255, 107, 107, 0.6); }
+          50% { transform: translateX(-50%) scale(1.05); box-shadow: 0 20px 50px rgba(255, 107, 107, 0.8); }
+          100% { transform: translateX(-50%) scale(1); box-shadow: 0 15px 40px rgba(255, 107, 107, 0.6); }
+        }
+      `;
+      document.head.appendChild(style);
+    }
+
+    passBtn.addEventListener('mouseenter', () => {
+      passBtn.style.transform = 'translateX(-50%) scale(1.1)';
+    });
+
+    passBtn.addEventListener('mouseleave', () => {
+      passBtn.style.transform = 'translateX(-50%) scale(1)';
+    });
 
     passBtn.addEventListener('click', () => {
       this.playSound('click');
-      passBtn.remove();
+
+      // Animate button disappearing
+      passBtn.style.animation = 'fadeOut 0.3s ease-out';
+      passBtn.style.opacity = '0';
+
+      setTimeout(() => {
+        passBtn.remove();
+      }, 300);
+
+      // Show passing message
+      this.showMessage('Passing turn...', 1500);
+
+      // Switch to AI turn
       this.currentPlayer = 'ai';
       this.movesCount++;
-      setTimeout(() => this.aiTurn(), 1000);
+
+      // Small delay before AI plays
+      setTimeout(() => this.aiTurn(), 1500);
     });
 
     document.body.appendChild(passBtn);
 
-    // Also show message
-    this.showMessage('No valid moves! You must pass.', 3000);
+    // Show prominent message
+    const msgBox = document.createElement('div');
+    msgBox.style.cssText = `
+      position: fixed;
+      top: 30%;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(255, 0, 0, 0.9);
+      color: white;
+      padding: 20px 40px;
+      font-size: 24px;
+      font-weight: bold;
+      border-radius: 15px;
+      z-index: 1999;
+      animation: slideDown 0.5s ease-out;
+    `;
+    msgBox.innerHTML = '⚠️ No Valid Moves Available!';
+    document.body.appendChild(msgBox);
+
+    setTimeout(() => {
+      msgBox.style.animation = 'fadeOut 0.5s ease-out';
+      setTimeout(() => msgBox.remove(), 500);
+    }, 3000);
   }
 
   private showMessage(text: string, duration: number = 2000): void {

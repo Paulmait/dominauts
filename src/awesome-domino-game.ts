@@ -754,9 +754,14 @@ export class AwesomeDominoGame {
         this.gameMode = (card as HTMLElement).dataset.mode as any;
         cards.forEach(c => {
           (c as HTMLElement).style.background = 'rgba(255,255,255,0.1)';
+          (c as HTMLElement).style.border = '2px solid rgba(255,255,255,0.3)';
         });
         (card as HTMLElement).style.background = 'rgba(255,255,255,0.2)';
+        (card as HTMLElement).style.border = '2px solid #ffd700';
         this.playSound('click');
+
+        // Show how to play button for selected mode
+        this.showHowToPlayButton();
       });
     });
 
@@ -766,6 +771,120 @@ export class AwesomeDominoGame {
 
   public openProfile(): void {
     this.profileDashboard.open();
+  }
+
+  private showHowToPlayButton(): void {
+    // Remove any existing how-to-play button
+    const existingBtn = document.getElementById('howToPlayBtn');
+    if (existingBtn) existingBtn.remove();
+
+    // Create the how-to-play button
+    const howToPlayBtn = document.createElement('button');
+    howToPlayBtn.id = 'howToPlayBtn';
+    howToPlayBtn.innerHTML = `
+      <span style="font-size: 20px; margin-right: 10px;">📖</span>
+      <span>How to Play ${getGameRules(this.gameMode).name}</span>
+    `;
+    howToPlayBtn.style.cssText = `
+      position: fixed;
+      bottom: 80px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+      color: #333;
+      border: none;
+      padding: 12px 30px;
+      font-size: 16px;
+      font-weight: bold;
+      border-radius: 25px;
+      cursor: pointer;
+      box-shadow: 0 5px 20px rgba(255, 215, 0, 0.4);
+      animation: pulse 2s infinite;
+      z-index: 1001;
+      transition: all 0.3s;
+    `;
+
+    howToPlayBtn.onmouseover = () => {
+      howToPlayBtn.style.transform = 'translateX(-50%) scale(1.1)';
+      howToPlayBtn.style.boxShadow = '0 8px 30px rgba(255, 215, 0, 0.6)';
+    };
+
+    howToPlayBtn.onmouseout = () => {
+      howToPlayBtn.style.transform = 'translateX(-50%) scale(1)';
+      howToPlayBtn.style.boxShadow = '0 5px 20px rgba(255, 215, 0, 0.4)';
+    };
+
+    howToPlayBtn.onclick = () => {
+      this.showSelectedModeRules();
+    };
+
+    document.body.appendChild(howToPlayBtn);
+  }
+
+  private showSelectedModeRules(): void {
+    const rulesModal = document.createElement('div');
+    rulesModal.id = 'rulesModal';
+    rulesModal.style.cssText = `
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.9);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 4000;
+      animation: fadeIn 0.3s ease-out;
+    `;
+
+    const rules = getGameRules(this.gameMode);
+    const howToPlayHTML = getHowToPlayText(this.gameMode);
+
+    rulesModal.innerHTML = `
+      <div style="
+        background: linear-gradient(135deg, #1a1a2e 0%, #0f0f1e 100%);
+        border: 3px solid #ffd700;
+        padding: 40px;
+        border-radius: 20px;
+        max-width: 800px;
+        max-height: 80vh;
+        overflow-y: auto;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
+      ">
+        ${howToPlayHTML}
+
+        <div style="display: flex; gap: 20px; justify-content: center; margin-top: 30px;">
+          <button onclick="document.getElementById('rulesModal').remove(); game.playSound('click');" style="
+            padding: 15px 40px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            color: white;
+            font-size: 18px;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.3s;
+          " onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+            Got it! Close
+          </button>
+          <button onclick="document.getElementById('rulesModal').remove(); document.getElementById('howToPlayBtn')?.remove(); game.playSound('click');" style="
+            padding: 15px 40px;
+            background: linear-gradient(135deg, #00d4ff 0%, #0099cc 100%);
+            border: none;
+            color: white;
+            font-size: 18px;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.3s;
+          " onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+            Ready to Play! 🎲
+          </button>
+        </div>
+      </div>
+    `;
+
+    document.body.appendChild(rulesModal);
+    this.playSound('powerup');
   }
 
   private showModePreview(mode: string): void {
@@ -1023,9 +1142,11 @@ export class AwesomeDominoGame {
   public startGame(difficulty: 'easy' | 'medium' | 'hard' | 'expert'): void {
     this.difficulty = difficulty;
 
-    // Remove menu
+    // Remove menu and how-to-play button
     const menu = document.getElementById('mainMenu');
     if (menu) menu.remove();
+    const howToPlayBtn = document.getElementById('howToPlayBtn');
+    if (howToPlayBtn) howToPlayBtn.remove();
 
     // Initialize game
     this.gameStarted = true;
@@ -2479,6 +2600,74 @@ export class AwesomeDominoGame {
     this.updateScoreDisplay();
   }
 
+  private updateAIScore(tile: Domino): void {
+    const rules = getGameRules(this.gameMode);
+    let pointsEarned = 0;
+
+    switch (this.gameMode) {
+      case 'allfives':
+        // Score when board ends total to multiple of 5
+        const total = this.boardLeftEnd + this.boardRightEnd;
+        if (total % 5 === 0 && total > 0) {
+          pointsEarned = total;
+        }
+        break;
+
+      case 'cross':
+        // Score points from all 4 ends when multiple of 5
+        const crossTotal = this.boardLeftEnd + this.boardRightEnd;
+        if (crossTotal % 5 === 0 && crossTotal > 0) {
+          pointsEarned = crossTotal;
+        }
+        break;
+
+      case 'classic':
+      case 'block':
+      case 'draw':
+        // Points scored at end of round only
+        break;
+
+      case 'partner':
+      case 'sixlove':
+      case 'cutthroat':
+        // Team scoring or special rules
+        if (tile.left === tile.right) {
+          pointsEarned = tile.left * 2; // Double tiles worth double
+        }
+        break;
+    }
+
+    // Apply score if earned
+    if (pointsEarned > 0) {
+      this.aiScore += pointsEarned;
+      this.showAIScorePopup(pointsEarned);
+      this.playSound('powerup');
+    }
+
+    // Update score display immediately
+    this.updateScoreDisplay();
+  }
+
+  private showAIScorePopup(points: number): void {
+    const popup = document.createElement('div');
+    popup.style.cssText = `
+      position: fixed;
+      top: 30%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 36px;
+      font-weight: bold;
+      color: #ff6b6b;
+      text-shadow: 0 0 20px rgba(255, 107, 107, 0.8);
+      animation: scorePopup 1s ease-out;
+      z-index: 1000;
+      pointer-events: none;
+    `;
+    popup.textContent = `AI +${points}`;
+    document.body.appendChild(popup);
+    setTimeout(() => popup.remove(), 1000);
+  }
+
   private showPipAdvantage(advantage: number): void {
     const msg = document.createElement('div');
     msg.style.cssText = `
@@ -2598,6 +2787,9 @@ export class AwesomeDominoGame {
         }
       }
 
+      // Calculate AI score for applicable game modes
+      this.updateAIScore(chosenMove.tile);
+
       // Check AI win
       if (this.aiHand.length === 0) {
         this.aiWins();
@@ -2636,15 +2828,23 @@ export class AwesomeDominoGame {
     const aiCanMove = this.canAIMove();
 
     if (!playerCanMove && !aiCanMove) {
-      // Game is blocked - count remaining pips
+      // Game is blocked - count remaining pips and award points
       const playerPips = this.playerHand.reduce((sum, tile) => sum + tile.left + tile.right, 0);
       const aiPips = this.aiHand.reduce((sum, tile) => sum + tile.left + tile.right, 0);
 
+      // In blocked games, winner scores the difference in pip counts
       if (playerPips < aiPips) {
+        // Player wins - score the difference
+        this.playerScore += (aiPips - playerPips);
         this.playerWins(true); // Blocked game win
       } else if (aiPips < playerPips) {
+        // AI wins - score the difference
+        this.aiScore += (playerPips - aiPips);
         this.aiWins(true); // Blocked game loss
       } else {
+        // Draw - both get points based on opponent's pips
+        this.playerScore += aiPips;
+        this.aiScore += playerPips;
         this.gameDraw();
       }
     } else if (!playerCanMove) {

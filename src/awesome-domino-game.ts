@@ -514,8 +514,63 @@ export class AwesomeDominoGame {
         The Ultimate Domino Experience
       </p>
 
+      <!-- Game Mode Preview Panel -->
+      <div id="modePreview" style="
+        position: absolute;
+        top: 50%;
+        left: 50px;
+        transform: translateY(-50%);
+        width: 350px;
+        background: rgba(0,0,0,0.9);
+        border: 2px solid rgba(255,255,255,0.3);
+        border-radius: 20px;
+        padding: 20px;
+        display: none;
+        backdrop-filter: blur(10px);
+        box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+        z-index: 100;
+      ">
+        <h3 id="previewTitle" style="color: #ffd700; margin-bottom: 15px; font-size: 24px;">Select a Game Mode</h3>
+        <div id="previewCanvas" style="
+          width: 100%;
+          height: 200px;
+          background: rgba(255,255,255,0.1);
+          border-radius: 10px;
+          margin-bottom: 15px;
+          overflow: hidden;
+          position: relative;
+        "></div>
+        <div id="previewDescription" style="color: white; font-size: 14px; line-height: 1.5; margin-bottom: 15px;"></div>
+        <div id="previewFeatures" style="color: #00ff00; font-size: 12px;"></div>
+        <div id="previewStats" style="
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 10px;
+          margin-top: 15px;
+          padding-top: 15px;
+          border-top: 1px solid rgba(255,255,255,0.2);
+        ">
+          <div style="color: white;">
+            <span style="opacity: 0.7;">Difficulty: </span>
+            <span id="difficultyStars" style="color: #ffd700;"></span>
+          </div>
+          <div style="color: white;">
+            <span style="opacity: 0.7;">Players: </span>
+            <span id="playerCount"></span>
+          </div>
+          <div style="color: white;">
+            <span style="opacity: 0.7;">Target: </span>
+            <span id="targetScore"></span>
+          </div>
+          <div style="color: white;">
+            <span style="opacity: 0.7;">Style: </span>
+            <span id="gameStyle"></span>
+          </div>
+        </div>
+      </div>
+
       <div id="modeSelection" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 30px; max-width: 1000px;">
-        <div class="game-mode-card" data-mode="classic" style="
+        <div class="game-mode-card" data-mode="classic" data-popular="true" style="
           background: rgba(255,255,255,0.1);
           border: 2px solid rgba(255,255,255,0.3);
           border-radius: 20px;
@@ -524,7 +579,20 @@ export class AwesomeDominoGame {
           cursor: pointer;
           transition: all 0.3s;
           backdrop-filter: blur(10px);
+          position: relative;
         ">
+          <div class="mode-badge" style="
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            background: linear-gradient(135deg, #ffd700, #ffed4e);
+            color: #333;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 10px;
+            font-weight: bold;
+            box-shadow: 0 2px 10px rgba(255,215,0,0.5);
+          ">POPULAR</div>
           <div style="font-size: 48px; margin-bottom: 10px;">🎯</div>
           <h3 style="color: white; margin: 5px 0;">Classic</h3>
           <p style="color: rgba(255,255,255,0.8); font-size: 12px;">Traditional</p>
@@ -661,12 +729,20 @@ export class AwesomeDominoGame {
 
     document.body.appendChild(menu);
 
-    // Add hover effects to cards
+    // Add hover effects to cards and show preview
     const cards = menu.querySelectorAll('.game-mode-card');
+    const previewPanel = document.getElementById('modePreview');
+
     cards.forEach(card => {
       card.addEventListener('mouseenter', () => {
         (card as HTMLElement).style.transform = 'translateY(-5px) scale(1.05)';
         (card as HTMLElement).style.boxShadow = '0 10px 30px rgba(255,255,255,0.2)';
+
+        // Show preview panel
+        const mode = (card as HTMLElement).dataset.mode;
+        if (mode && previewPanel) {
+          this.showModePreview(mode);
+        }
       });
 
       card.addEventListener('mouseleave', () => {
@@ -690,6 +766,258 @@ export class AwesomeDominoGame {
 
   public openProfile(): void {
     this.profileDashboard.open();
+  }
+
+  private showModePreview(mode: string): void {
+    const preview = document.getElementById('modePreview');
+    if (!preview) return;
+
+    preview.style.display = 'block';
+
+    const rules = getGameRules(mode);
+    const title = document.getElementById('previewTitle');
+    const canvas = document.getElementById('previewCanvas');
+    const description = document.getElementById('previewDescription');
+    const features = document.getElementById('previewFeatures');
+    const difficulty = document.getElementById('difficultyStars');
+    const playerCount = document.getElementById('playerCount');
+    const targetScore = document.getElementById('targetScore');
+    const gameStyle = document.getElementById('gameStyle');
+
+    if (title) title.innerHTML = `${rules.icon} ${rules.name}`;
+
+    // Create mini canvas preview
+    if (canvas) {
+      canvas.innerHTML = this.createMiniPreview(mode);
+    }
+
+    if (description) {
+      description.innerHTML = `
+        <strong>${rules.description}</strong><br>
+        <span style="opacity: 0.8;">${rules.winCondition}</span>
+      `;
+    }
+
+    if (features) {
+      const topFeatures = rules.specialRules.slice(0, 3);
+      features.innerHTML = `
+        <div style="margin-bottom: 5px; font-weight: bold;">✨ Key Features:</div>
+        ${topFeatures.map(f => `• ${f}`).join('<br>')}
+      `;
+    }
+
+    // Difficulty rating
+    if (difficulty) {
+      const diffLevel = this.getModeDifficulty(mode);
+      difficulty.innerHTML = '⭐'.repeat(diffLevel) + '☆'.repeat(5 - diffLevel);
+    }
+
+    if (playerCount) playerCount.textContent = `${rules.playerCount} players`;
+    if (targetScore) targetScore.textContent = `${rules.maxScore} points`;
+    if (gameStyle) gameStyle.textContent = this.getGameStyle(mode);
+  }
+
+  private createMiniPreview(mode: string): string {
+    // Create a visual representation of how the table looks for each mode
+    const previews: Record<string, string> = {
+      classic: `
+        <div style="
+          width: 100%;
+          height: 100%;
+          background: linear-gradient(135deg, #1e5128 0%, #0d2818 100%);
+          border-radius: 10px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          position: relative;
+        ">
+          <div style="
+            display: flex;
+            gap: 5px;
+            align-items: center;
+          ">
+            <div style="width: 40px; height: 20px; background: white; border: 2px solid #333; border-radius: 3px;"></div>
+            <div style="width: 40px; height: 20px; background: white; border: 2px solid #333; border-radius: 3px;"></div>
+            <div style="width: 40px; height: 20px; background: white; border: 2px solid #333; border-radius: 3px;"></div>
+          </div>
+          <div style="position: absolute; bottom: 10px; color: white; font-size: 12px;">Green Felt Table</div>
+        </div>
+      `,
+      partner: `
+        <div style="
+          width: 100%;
+          height: 100%;
+          background: linear-gradient(135deg, #1e3a5f 0%, #0a1929 100%);
+          border-radius: 10px;
+          position: relative;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        ">
+          <div style="position: absolute; top: 20px; color: #00ff00;">Partner</div>
+          <div style="position: absolute; bottom: 20px; color: #00ff00;">You</div>
+          <div style="position: absolute; left: 20px; color: #ff6b6b;">Opp 1</div>
+          <div style="position: absolute; right: 20px; color: #ff6b6b;">Opp 2</div>
+          <div style="color: white;">2v2</div>
+        </div>
+      `,
+      cutthroat: `
+        <div style="
+          width: 100%;
+          height: 100%;
+          background: linear-gradient(135deg, #5c1e1e 0%, #2d0d0d 100%);
+          border-radius: 10px;
+          position: relative;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        ">
+          <div style="position: absolute; top: 20px; color: #ffd700;">Player 2</div>
+          <div style="position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); color: #00ff00;">You</div>
+          <div style="position: absolute; left: 20px; top: 50%; transform: translateY(-50%); color: #ff6b6b;">Player 3</div>
+          <div style="color: white; font-size: 24px;">🎭</div>
+        </div>
+      `,
+      sixlove: `
+        <div style="
+          width: 100%;
+          height: 100%;
+          background: linear-gradient(135deg, #1e3a5f 0%, #0a1929 100%);
+          border-radius: 10px;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          gap: 10px;
+        ">
+          <div style="font-size: 30px;">🇯🇲</div>
+          <div style="color: #ffd700; font-weight: bold;">6-LOVE</div>
+          <div style="color: white; font-size: 12px;">Win 6 in a row!</div>
+        </div>
+      `,
+      cross: `
+        <div style="
+          width: 100%;
+          height: 100%;
+          background: linear-gradient(135deg, #3d1e5c 0%, #1a0d2d 100%);
+          border-radius: 10px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          position: relative;
+        ">
+          <div style="
+            width: 80px;
+            height: 2px;
+            background: white;
+            position: absolute;
+          "></div>
+          <div style="
+            width: 2px;
+            height: 80px;
+            background: white;
+            position: absolute;
+          "></div>
+          <div style="
+            width: 30px;
+            height: 30px;
+            border: 2px solid #ffd700;
+            border-radius: 50%;
+            background: rgba(255,215,0,0.2);
+          "></div>
+          <div style="position: absolute; bottom: 10px; color: white; font-size: 12px;">4-Way Layout</div>
+        </div>
+      `,
+      allfives: `
+        <div style="
+          width: 100%;
+          height: 100%;
+          background: linear-gradient(135deg, #3d1e5c 0%, #1a0d2d 100%);
+          border-radius: 10px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 20px;
+        ">
+          <div style="
+            padding: 10px;
+            background: rgba(255,215,0,0.3);
+            border: 2px solid #ffd700;
+            border-radius: 5px;
+          ">
+            <div style="color: white; font-size: 20px;">5</div>
+          </div>
+          <div style="color: white;">+</div>
+          <div style="
+            padding: 10px;
+            background: rgba(255,215,0,0.3);
+            border: 2px solid #ffd700;
+            border-radius: 5px;
+          ">
+            <div style="color: white; font-size: 20px;">10</div>
+          </div>
+          <div style="position: absolute; bottom: 10px; color: #ffd700; font-size: 12px;">Score Zones</div>
+        </div>
+      `,
+      draw: `
+        <div style="
+          width: 100%;
+          height: 100%;
+          background: linear-gradient(135deg, #3d1e5c 0%, #1a0d2d 100%);
+          border-radius: 10px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        ">
+          <div style="font-size: 60px; animation: pulse 1s infinite;">⚡</div>
+          <div style="position: absolute; bottom: 10px; color: white; font-size: 12px;">Fast-Paced Action!</div>
+        </div>
+      `,
+      block: `
+        <div style="
+          width: 100%;
+          height: 100%;
+          background: linear-gradient(135deg, #1e5128 0%, #0d2818 100%);
+          border-radius: 10px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        ">
+          <div style="font-size: 60px;">🚫</div>
+          <div style="position: absolute; bottom: 10px; color: white; font-size: 12px;">Strategic Blocking</div>
+        </div>
+      `
+    };
+
+    return previews[mode] || previews.classic;
+  }
+
+  private getModeDifficulty(mode: string): number {
+    const difficulties: Record<string, number> = {
+      classic: 2,
+      draw: 1,
+      block: 3,
+      allfives: 3,
+      cross: 4,
+      cutthroat: 4,
+      partner: 3,
+      sixlove: 5
+    };
+    return difficulties[mode] || 2;
+  }
+
+  private getGameStyle(mode: string): string {
+    const styles: Record<string, string> = {
+      classic: 'Casual',
+      draw: 'Fast',
+      block: 'Strategic',
+      allfives: 'Points',
+      cross: 'Complex',
+      cutthroat: 'Competitive',
+      partner: 'Team',
+      sixlove: 'Tournament'
+    };
+    return styles[mode] || 'Standard';
   }
 
   public startGame(difficulty: 'easy' | 'medium' | 'hard' | 'expert'): void {

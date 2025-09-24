@@ -3,12 +3,7 @@
  * Complete analytics tracking for user behavior and revenue
  */
 
-declare global {
-  interface Window {
-    gtag: (...args: any[]) => void;
-    dataLayer: any[];
-  }
-}
+// Types are defined in src/types/global.d.ts
 
 export class GoogleAnalytics {
   private static instance: GoogleAnalytics;

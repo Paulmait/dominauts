@@ -597,7 +597,7 @@ export class TournamentSystem {
       const refund = Math.floor(this.userEntry.entryTime ? 0.9 : 1);
       await coinEconomy.addCoins(
         refund,
-        'refund',
+        'bonus',  // Using 'bonus' type for refunds
         'tournament_withdrawal',
         'Tournament withdrawal refund'
       );

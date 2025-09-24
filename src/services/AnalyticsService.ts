@@ -310,13 +310,7 @@ class AnalyticsService {
   }
 }
 
-// Window type augmentation for gtag
-declare global {
-  interface Window {
-    gtag?: (...args: any[]) => void;
-    dataLayer?: any[];
-  }
-}
+// Window types are defined in src/types/global.d.ts
 
 export const analyticsService = new AnalyticsService();
 export default analyticsService;

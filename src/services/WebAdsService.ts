@@ -6,12 +6,7 @@
 import { analytics } from './GoogleAnalytics';
 import { coinEconomy } from './CoinEconomyService';
 
-declare global {
-  interface Window {
-    adsbygoogle: any[];
-    googletag: any;
-  }
-}
+// Window types are defined in src/types/global.d.ts
 
 export interface AdConfig {
   type: 'banner' | 'interstitial' | 'rewarded' | 'native';

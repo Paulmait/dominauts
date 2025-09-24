@@ -341,23 +341,20 @@ export class StripePaymentIntegration {
 
   /**
    * Verify webhook signature
+   * Note: This should be done server-side only
    */
   async verifyWebhook(payload: string, signature: string): Promise<any> {
-    const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
-
-    if (!webhookSecret) {
-      throw new Error('Webhook secret not configured');
-    }
+    // Webhook verification must be done server-side
+    // This is a placeholder - actual implementation should be in Edge Functions
+    console.warn('Webhook verification should be done server-side');
 
     try {
-      // This would typically be done server-side
-      const event = await this.stripe?.webhooks.constructEvent(
-        payload,
-        signature,
-        webhookSecret
-      );
+      // Call your server endpoint to verify the webhook
+      const response = await supabase.functions.invoke('verify-webhook', {
+        body: { payload, signature }
+      });
 
-      return event;
+      return response.data;
 
     } catch (error) {
       errorTracking.captureException(error as Error, { action: 'verifyWebhook' });

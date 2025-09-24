@@ -362,12 +362,7 @@ interface StripeProduct {
   badge?: string;
 }
 
-// Extend window for gtag
-declare global {
-  interface Window {
-    gtag?: (...args: any[]) => void;
-  }
-}
+// Window types are defined in src/types/global.d.ts
 
 // Singleton instance
 export const stripePaymentService = new StripePaymentService();

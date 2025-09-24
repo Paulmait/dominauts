@@ -4,7 +4,6 @@
  */
 
 import * as Sentry from '@sentry/browser';
-import { BrowserTracing } from '@sentry/tracing';
 import { CaptureConsole } from '@sentry/integrations';
 
 export class SentryErrorTracking {
@@ -44,11 +43,9 @@ export class SentryErrorTracking {
         release: process.env.VITE_APP_VERSION || '2.0.0',
 
         integrations: [
-          new BrowserTracing({
+          Sentry.browserTracingIntegration({
             // Set tracingOrigins to control what URLs are traced
-            tracingOrigins: ['localhost', 'dominauts.com', /^\//],
-            // Capture interactions like clicks and navigation
-            routingInstrumentation: Sentry.browserTracingIntegration(),
+            tracingOrigins: ['localhost', 'dominauts.com'],
           }),
           new CaptureConsole({
             levels: ['error', 'warn']
